@@ -1,0 +1,84 @@
+input[type=checkbox].toggle {
+	height: 0;
+	width: 0;
+	display: none;
+  flex: unset;
+}
+
+label.toggle {
+	cursor: pointer;
+	text-indent: -9999px;
+	width: 40px;
+	height: 20px;
+	background: var(--color-bg-btn-minor-inactive);
+	display: block;
+	border-radius: 100px;
+	position: relative;
+}
+
+label.toggle:after {
+	content: '';
+	position: absolute;
+	top: 1px;
+	left: 1px;
+	width: 18px;
+	height: 18px;
+	background: #fff;
+	border-radius: 90px;
+	transition: 0.3s;
+}
+
+input.toggle:checked + label.toggle {
+	background: var(--color-bg-btn-minor-active);
+}
+
+input.toggle:checked + label.toggle:after {
+	left: calc(100% - 1px);
+	transform: translateX(-100%);
+}
+
+label.toggle:active:after {
+	width: 25px;
+}
+
+div.toggle-container {
+	display: flex;
+  flex: 0.5;
+	justify-content: right;
+	align-items: center;
+}
+
+label.toggle-value {
+  margin-right: 15px;
+}
+
+div.toggle-value {
+  flex: 1 !important;
+  text-align: right;
+}
+
+span.dialog.tag {
+  flex: 1.5;
+  text-align: center;
+  padding: 0 2px;
+  margin: 0;
+}
+
+hr.dialog {
+  margin: 0;
+}
+
+label.toggle-header-type {
+  flex: 3 !important;
+  margin-right: 8px;
+}
+
+div.toggle-header {
+  font-size: small;
+  font-weight: bold;
+}
+
+div.form-group.toggle-disabled {
+  color: var(--color-text-dark-inactive);
+  text-decoration: line-through;
+}

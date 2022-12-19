@@ -1,7 +1,7 @@
 {
-  "id": "module",
-  "title": "New Module",
-  "description": "",
+  "id": "modify-rolls",
+  "title": "Modify Rolls",
+  "description": "TBA",
   "version": "This is auto replaced",
   "library": "false",
   "manifestPlusVersion": "1.2.0",
@@ -12,20 +12,28 @@
   },
   "authors": [
     {
-      "name": "The League of Extraordinary FVTT Developers",
-      "url": "https://github.com/League-of-Foundry-Developers",
-      "discord": "discordID#0001"
+      "name": "JellyfishJail",
+      "url": "https://github.com/JulieWinchester",
+      "discord": "JellyfishJail#3956"
     }
   ],
   "relationships": {
-    "systems": [],
-    "requires": []
-  },
+    "systems": [
+        {
+            "id": "dnd5e",
+            "type": "system"
+        }
+    ],
+    "requires": [
+        {
+            "id": "lib-wrapper",
+            "type": "module"
+        }
+    ]
+},
   "esmodules": [
-    "scripts/module.js"
-  ],
-  "scripts": [
-    "scripts/lib/lib.js"
+    "module/modifyRolls.js",
+    "module/d20-roll.js"
   ],
   "styles": [
     "styles/module.css"
