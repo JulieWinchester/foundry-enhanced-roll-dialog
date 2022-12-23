@@ -127,9 +127,11 @@ async function _onAbilitySelect(abl, data, roll, html) {
       // update
       fg.querySelector("label").textContent = genericLabel;
       fg.querySelector("label.toggle-value").textContent = value;
-      fg.querySelector("input").checked = true;
-      new ModifyRoll(roll, fg.querySelector("input")).updateRoll();
-      _updateDialogFormula(roll.formula, html);
+      if (fg.querySelector("input").checked == false) {
+        fg.querySelector("input").checked = true;
+        new ModifyRoll(roll, fg.querySelector("input")).updateRoll();
+        _updateDialogFormula(roll.formula, html);
+      }
       if (fg.style.display == "none") fg.style.display = "flex";
     } else {
       // add
@@ -148,8 +150,10 @@ async function _onAbilitySelect(abl, data, roll, html) {
   } else if (fg) {
     // Bonus does not exist, must remove if present
     fg.style.display = "none";
-    fg.querySelector("input").checked = false;
-    new ModifyRoll(roll, fg.querySelector("input")).updateRoll();
-    _updateDialogFormula(roll.formula, html);
+    if (fg.querySelector("input").checked == true) {
+      fg.querySelector("input").checked = false;
+      new ModifyRoll(roll, fg.querySelector("input")).updateRoll();
+      _updateDialogFormula(roll.formula, html);
+    }
   }
 }
