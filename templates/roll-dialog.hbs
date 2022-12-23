@@ -1,91 +1,93 @@
-<form>
+<form class="roll-toggle-dialog">
     <div class="form-group toggle-header" style="margin-bottom: 0;">
         <label>Modifier</label>
         <label class="toggle-header-type">Type</label>
     </div>
     <hr class="dialog">
 
-    {{#if itemAttackBonus}}
-    <div class="form-group dnd5e">
-        <label>{{itemName}}</label>
-        <span class="dialog tag">Item</span>
-        <div class="toggle-value">
-            <label class="toggle-value">{{itemAttackBonus}}</label>
-        </div>
-        <div class="toggle-container">
-            <input 
-                type="checkbox"
-                class="toggle"
-                id="toggle-checkbox-item-attack-bonus"
-                data-attribute="@itemAttackBonus"
-                checked="checked"
-            >
-            <label class="toggle" for="toggle-checkbox-item-attack-bonus">Toggle</label>
-        </div>
-    </div>
-    {{/if}}
-
-    {{#if mod includeZero=true}}
-    <div class="form-group dnd5e">
-        <label class="ability">{{defaultAbilityLabel}}</label>
-        <span class="dialog tag">Ability</span>
-        <div class="toggle-value">
-            <label class="ability toggle-value">{{mod}}</label>
-        </div>
-        <div class="toggle-container">
-            <input 
-                type="checkbox"
-                class="toggle toggle-ability"
-                id="toggle-checkbox-ability"
-                data-attribute="@mod"
-                checked="checked"
-            >
-            <label class="toggle" for="toggle-checkbox-ability">Toggle</label>
-        </div>
-    </div>
-    {{/if}}
-
-    {{#if prof includeZero=true}}
-    <div class="form-group dnd5e {{#if (not proficient) }} toggle-disabled {{/if}}">
-        <label>Proficiency</label>
-        <span class="dialog tag">Proficiency</span>
-        <div class="toggle-value">
-            <label class="toggle-value">{{prof}}</label>
-        </div>
-        <div class="toggle-container">
-            <input 
-                type="checkbox"
-                class="toggle toggle-proficiency"
-                id="toggle-checkbox-proficiency"
-                data-attribute="@prof"
-                {{#if proficient }} checked="checked" {{/if}}
-            >
-            <label class="toggle" for="toggle-checkbox-proficiency">Toggle</label>
-        </div>
-    </div>
-    {{/if}}
-    
-    {{#each changes}}  
-        <div class="form-group dnd5e {{#if this.effect.disabled }} toggle-disabled {{/if}}">
-            <label>{{this.effect.label}}</label>
-            <span class="dialog tag">Effect</span>
+    <div class="toggle-rows">
+        {{#if itemAttackBonus}}
+        <div class="form-group dnd5e">
+            <label>{{itemName}}</label>
+            <span class="dialog tag">Item</span>
             <div class="toggle-value">
-            <label class="toggle-value">{{this.value}}</label>
-        </div>
+                <label class="toggle-value">{{itemAttackBonus}}</label>
+            </div>
             <div class="toggle-container">
                 <input 
                     type="checkbox"
-                    class="toggle toggle-effect"
-                    id="toggle-checkbox-effect-{{@index}}"
-                    data-change-id="{{ @index }}"
-                    data-change-value="{{ this.value }}"
-                    data-attribute="{{ this.attr }}"
-                    {{#if (not this.effect.disabled) }} checked {{/if}}
+                    class="toggle"
+                    id="toggle-checkbox-item-attack-bonus"
+                    data-attribute="@itemAttackBonus"
+                    checked="checked"
                 >
-                <label class="toggle" for="toggle-checkbox-effect-{{@index}}">Toggle</label>
+                <label class="toggle" for="toggle-checkbox-item-attack-bonus">Toggle</label>
             </div>
         </div>
-    {{/each}}
+        {{/if}}
+
+        {{#if mod includeZero=true}}
+        <div class="form-group dnd5e">
+            <label class="ability">{{defaultAbilityLabel}}</label>
+            <span class="dialog tag">Ability</span>
+            <div class="toggle-value">
+                <label class="ability toggle-value">{{mod}}</label>
+            </div>
+            <div class="toggle-container">
+                <input 
+                    type="checkbox"
+                    class="toggle toggle-ability"
+                    id="toggle-checkbox-ability"
+                    data-attribute="@mod"
+                    checked="checked"
+                >
+                <label class="toggle" for="toggle-checkbox-ability">Toggle</label>
+            </div>
+        </div>
+        {{/if}}
+
+        {{#if prof includeZero=true}}
+        <div class="form-group dnd5e {{#if (not proficient) }} toggle-disabled {{/if}}">
+            <label>Proficiency</label>
+            <span class="dialog tag">Proficiency</span>
+            <div class="toggle-value">
+                <label class="toggle-value">{{prof}}</label>
+            </div>
+            <div class="toggle-container">
+                <input 
+                    type="checkbox"
+                    class="toggle toggle-proficiency"
+                    id="toggle-checkbox-proficiency"
+                    data-attribute="@prof"
+                    {{#if proficient }} checked="checked" {{/if}}
+                >
+                <label class="toggle" for="toggle-checkbox-proficiency">Toggle</label>
+            </div>
+        </div>
+        {{/if}}
+        
+        {{#each changes}}  
+            <div class="form-group dnd5e {{#if this.effect.disabled }} toggle-disabled {{/if}}">
+                <label>{{this.effect.label}}</label>
+                <span class="dialog tag">Effect</span>
+                <div class="toggle-value">
+                <label class="toggle-value">{{this.value}}</label>
+            </div>
+                <div class="toggle-container">
+                    <input 
+                        type="checkbox"
+                        class="toggle toggle-effect"
+                        id="toggle-checkbox-effect-{{@index}}"
+                        data-change-id="{{ @index }}"
+                        data-change-value="{{ this.value }}"
+                        data-attribute="{{ this.attr }}"
+                        {{#if (not this.effect.disabled) }} checked {{/if}}
+                    >
+                    <label class="toggle" for="toggle-checkbox-effect-{{@index}}">Toggle</label>
+                </div>
+            </div>
+        {{/each}}
+    </div> {{!-- End toggle rows div  --}}
 
     <hr>
 

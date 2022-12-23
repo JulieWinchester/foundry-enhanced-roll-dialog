@@ -7,20 +7,6 @@ export function getAttackToHitWrapper(wrapped, ...args) {
     console.log(results);
     let {rollData, parts} = results;
 
-    // Construct initial action info object
-    let action = {
-      mode: "attack",
-      parts: parts,
-      changes: RollEffectChanges.getChanges(this.actor, "attack", this.system.actionType),
-      item: {
-        name: this.name || "",
-        abilityMod: this.abilityMod
-      },
-      actor: {},
-      proficient: this.system.proficient
-    };
-    rollData.action = action;
-
     // If item bonus present, reparse as @attr
     if (parseInt(rollData.item.attackBonus) && (parts || []).includes(rollData.item.attackBonus)) {
       rollData, parts = itemAttackBonusAsAttribute(rollData, parts);
@@ -31,6 +17,23 @@ export function getAttackToHitWrapper(wrapped, ...args) {
     if ( (actorAttackBonus) && ( (parts || []).includes(actorAttackBonus) ) ) {
       rollData, parts = actorAttackBonusAsAttribute(rollData, parts, actorAttackBonus);
     }
+
+    const attributeOrder = ["@itemAttackBonus", "@mod", "@prof", "@actorAttackBonus", "ammo"]
+
+    // Construct initial action info object
+    let action = {
+      attributeOrder: attributeOrder,
+      mode: "attack",
+      parts: parts,
+      changes: RollEffectChanges.getChanges(this.actor, parts, "attack", this.system.actionType),
+      item: {
+        name: this.name || "",
+        abilityMod: this.abilityMod
+      },
+      actor: {},
+      proficient: this.system.proficient
+    };
+    rollData.action = action;
   }
 
   return results;

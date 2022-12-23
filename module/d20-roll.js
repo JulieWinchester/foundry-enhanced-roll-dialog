@@ -26,7 +26,7 @@ export async function configureDialog({title, defaultRollMode, defaultAction=thi
     proficient: this.data.action?.proficient,
     changes: this.data.action?.changes,
     itemAttackBonus: parseInt(this.data.itemAttackBonus) ? addPlusIfNotPresent(this.data.itemAttackBonus) : null,
-    itemName: this.data.action?.item?.name
+    itemName: this.data.action?.item?.name,
   });
 
   let defaultButton = "normal";
@@ -64,10 +64,10 @@ export async function configureDialog({title, defaultRollMode, defaultAction=thi
           })
         });
         html[0].querySelector("select[name='ability']")?.addEventListener("change", (event) => {
-          _onAbilitySelect(event.target.value, this.data, html);
+          _onAbilitySelect(event.target.value, this.data, this, html);
         });
       }
-    }, options).render(true);
+    }, options).render(true, { height: "100%" });
   });
 }
 
@@ -105,10 +105,50 @@ function _updateDialogFormula(formula, html) {
   html[0].querySelector("form input[name='formula']").value = `${formula} + @bonus`;
 }
 
-function _onAbilitySelect(abl, data, html) {
-  const label = CONFIG.DND5E.abilities[abl]
-  const mod = addPlusIfNotPresent(data.abilities[abl].mod)
-  console.log(html[0].querySelector("label.ability"));
+async function _onAbilitySelect(abl, data, roll, html) {
+  const label = CONFIG.DND5E.abilities[abl];
+  const mod = addPlusIfNotPresent(data.abilities[abl].mod);
+
+  // Update ability modifier value
   html[0].querySelector("label.ability").textContent = label;
   html[0].querySelector("label.ability.toggle-value").textContent = mod;
+
+  // If ability check bonus, update
+  const fg = html[0]
+    .querySelector("input[data-attribute='@abilityCheckBonus']")
+    ?.closest("div.form-group");
+  if (data.abilities[abl].bonuses?.check) {
+    const genericLabel = "Ability Check Bonus"
+    const value = addPlusIfNotPresent(data.abilities[abl].bonuses.check);
+
+    // Bonus exists, must update or add
+    if (fg) {
+      // update
+      fg.querySelector("label").textContent = genericLabel;
+      fg.querySelector("label.toggle-value").textContent = value;
+      fg.querySelector("input").checked = true;
+      new ModifyRoll(roll, fg.querySelector("input")).updateRoll();
+      _updateDialogFormula(roll.formula, html);
+      if (fg.style.display == "none") fg.style.display = "flex";
+    } else {
+      // add
+      const newElement = await renderTemplate("/modules/modify-rolls/templates/ability-check-bonus-row.hbs", {
+        label: genericLabel,
+        value: value
+      });
+      $("form.roll-toggle-dialog div.toggle-rows").append(newElement);
+
+      // apply usual event listeners
+      html[0].querySelector("div.form-group.dnd5e.ability-check-bonus")
+        .addEventListener("change", (event) => {
+          roll._onPartToggle(event, html);
+      });
+    }
+  } else if (fg) {
+    // Bonus does not exist, must remove if present
+    fg.style.display = "none";
+    fg.querySelector("input").checked = false;
+    new ModifyRoll(roll, fg.querySelector("input")).updateRoll();
+    _updateDialogFormula(roll.formula, html);
+  }
 }

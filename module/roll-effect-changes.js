@@ -7,29 +7,33 @@ Maybe there is an easier way to do this, but I'm not aware of it so far!
 
 /**
  * Gets relevant effect changes for a particular roll.
- * @param {Actor5e} actor       Actor associated with the role.
- * @param {String} rollType     One of "attack", "check", "save", or "skill".
- * @param {string} rollSubType  Skill ID, ability ID, or attack type (e.g., mwak). Optional.
+ * @param {Actor5e} actor        Actor associated with the role.
+ * @param {Array}   parts        Array of roll formula parts.
+ * @param {String}  rollType     One of "attack", "check", "save", or "skill".
+ * @param {string}  rollSubType  Skill ID, ability ID, or attack type (e.g., mwak). Optional.
  */
 export default class RollEffectChanges {
   attackRollTypes = ["attack"];
   nonAttackRollTypes = ["check", "save", "skill"];
 
-  constructor(actor, rollType, rollSubType=null) {
+  constructor(actor, parts, rollType, rollSubType=null, isSkillAbility=false) {
     this.actor = actor;
+    this.parts = parts;
     this.rollType = rollType;
     this.rollSubType = rollSubType;
+    this.isSkillAbility = isSkillAbility;
   }
 
   /**
    * Static method to get just the relevant effect changes for roll.
-   * @param {Actor5e} actor       Actor associated with the role.
-   * @param {String} rollType     One of "attack", "check", "save", or "skill".
-   * @param {string} rollSubType  Skill ID, ability ID, or attack type (e.g., mwak). Optional.
+   * @param {Actor5e} actor        Actor associated with the role.
+   * @param {Array}   parts        Array of roll formula parts.
+   * @param {String}  rollType     One of "attack", "check", "save", or "skill".
+   * @param {string}  rollSubType  Skill ID, ability ID, or attack type (e.g., mwak). Optional.
    * @returns {Array<Object>}     Array of effect change objects with original effect included.
    */
-  static getChanges(actor, rollType, rollSubType=null) {
-    return new this(actor, rollType, rollSubType).changes;
+  static getChanges(actor, parts, rollType, rollSubType=null, isSkillAbility=false) {
+    return new this(actor, parts, rollType, rollSubType, isSkillAbility).changes;
   }
 
   /**
@@ -37,15 +41,30 @@ export default class RollEffectChanges {
    * @type {Array<Object>} 
    */
   get changes() {
-    return this.actor.effects.map(effect => {
+    console.log(this.rollType);
+    console.log(this.rollSubType);
+
+    let c = this.actor.effects.map(effect => {
       const changes = effect.changes
         .filter(change => this.changeKeys.includes(change.key))
         .map(change => foundry.utils.mergeObject(change, 
-          { effect: effect, attr: this.attributeForChange(change.key) }
+          { 
+            effect: effect, 
+            attr: this.attributeForChange(change.key)
+          }
         ));
 
       return ( !(effect.isSuppressed) && changes.length ) ? changes : null;
     }).filter(effect => effect).flat();
+
+    // Skill rolls are also ability checks, have to watch out for that
+    if (this.rollType == "skill") {
+      return c.concat(this.constructor.getChanges(
+        this.actor, this.parts, "check", CONFIG.DND5E.skills[this.rollSubType].ability, true
+      ));
+    } else {
+      return c;
+    }
   }
 
   /**
@@ -55,9 +74,6 @@ export default class RollEffectChanges {
   get changeKeys() {
     const keys = [];
   
-    // Get global bonus key
-    keys.push(this.globalBonusKeyFormula);
-  
     // If present, get specific skill or ability bonus
     if (this.isNonAttack() && this.rollSubType) {
       if (this.rollType == 'skill') {
@@ -65,8 +81,10 @@ export default class RollEffectChanges {
       } else {
         keys.push(`system.abilities.${this.rollSubType}.bonuses.${this.rollType}`);
       }
-      
     }
+
+    // Get global bonus key
+    keys.push(this.globalBonusKeyFormula);
     console.log(keys);
     return keys;
   }
@@ -108,11 +126,17 @@ export default class RollEffectChanges {
 
       if (this.rollSubType && key.includes(this.rollSubType)) {
         // specific bonus
-        attr = "@".concat(
-          this.rollSubType,
-          (this.rollType == "save") ? "Save" : "Check",
-          "Bonus"
-        );
+        if (this.isSkillAbility && this.rollType == "check") {
+          // If checking for ability bonuses on skill rolls, need to pay special attention
+          attr = "@abilityCheckBonus";
+        } else {
+          // Normal case
+          attr = "@".concat(
+            this.rollSubType,
+            (this.rollType == "save") ? "Save" : "Check",
+            "Bonus"
+          );
+        }
       } else {
         // global bonus
         attr = "@".concat(this.rollType, "Bonus");

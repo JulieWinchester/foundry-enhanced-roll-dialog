@@ -16,15 +16,24 @@ export function rollSkillWrapper(wrapped, skillId, options) {
   if ( globalBonuses.check ) parts.push("@checkBonus");
   if ( skl.bonuses?.check ) parts.push(`@${skillId}CheckBonus`);
   if ( globalBonuses.skill ) parts.push("@skillBonus");
-  if ( options.parts?.length > 0 ) parts.push(...options.parts);
+  const baseAttributeOrder = ["@mod", "@abilityCheckBonus", "@prof", "@checkBonus", `@${skillId}CheckBonus`, "@skillBonus"];
+  
+  let addlAttributeOrder = [];
+  if ( options.parts?.length > 0 ) { 
+    parts.push(...options.parts);
+    addlAttributeOrder = options.parts
+      .filter(p => p[0] && p[0] == "@")
+      .filter(p => !baseAttributeOrder.includes(p));
+  }
 
   options = foundry.utils.mergeObject(options, {
     data: {
       action: {
         actionType: "abilities",
+        attributeOrder: baseAttributeOrder.concat(addlAttributeOrder),
         mode: "skill",
         parts: parts,
-        changes: RollEffectChanges.getChanges(this, "skill", skillId),
+        changes: RollEffectChanges.getChanges(this, parts, "skill", skillId),
         skill: skillId,
         proficient: skl.proficient
       }
@@ -42,17 +51,24 @@ export function rollAbilityTestWrapper(wrapped, abilityId, options) {
   if ( abl?.checkProf.hasProficiency ) parts.push("@prof");
   if ( abl?.bonuses?.check ) parts.push(`@${abilityId}CheckBonus`);
   if ( globalBonuses.check ) parts.push("@checkBonus");
-  if ( options.parts?.length > 0 ) parts.push(...options.parts);
-
-  console.log(parts);
+  const baseAttributeOrder = ["@mod", "@prof", `@${abilityId}CheckBonus`, "@checkBonus"];
+  
+  let addlAttributeOrder = [];
+  if ( options.parts?.length > 0 ) {
+    parts.push(...options.parts);
+    addlAttributeOrder = options.parts
+      .filter(p => p[0] && p[0] == "@")
+      .filter(p => !baseAttributeOrder.includes(p));
+  }
 
   options = foundry.utils.mergeObject(options, {
     data: {
       action: {
         actionType: "abilities",
+        attributeOrder: baseAttributeOrder.concat(addlAttributeOrder),
         mode: "check",
         parts: parts,
-        changes: RollEffectChanges.getChanges(this, "check", abilityId),
+        changes: RollEffectChanges.getChanges(this, parts, "check", abilityId),
         ability: abilityId,
         proficient: abl?.checkProf.hasProficiency
       }
@@ -71,15 +87,24 @@ export function rollAbilitySaveWrapper(wrapped, abilityId, options) {
   if ( abl?.saveProf.hasProficiency ) parts.push("@prof");
   if ( abl?.bonuses?.save ) parts.push(`@${abilityId}SaveBonus`);
   if ( globalBonuses.save ) parts.push("@saveBonus");
-  if ( options.parts?.length > 0 ) parts.push(...options.parts);
+  const baseAttributeOrder = ["@mod", "@prof", `@${abilityId}SaveBonus`, "@saveBonus"];
+
+  let addlAttributeOrder = [];
+  if ( options.parts?.length > 0 ) {
+    parts.push(...options.parts);
+    addlAttributeOrder = options.parts
+      .filter(p => p[0] && p[0] == "@")
+      .filter(p => !baseAttributeOrder.includes(p));
+  }
 
   options = foundry.utils.mergeObject(options, {
     data: {
       action: {
         actionType: "abilities",
+        attributeOrder: baseAttributeOrder.concat(addlAttributeOrder),
         mode: "save",
         parts: parts,
-        changes: RollEffectChanges.getChanges(this, "save", abilityId),
+        changes: RollEffectChanges.getChanges(this, parts, "save", abilityId),
         ability: abilityId,
         proficient: abl?.saveProf.hasProficiency
       }
