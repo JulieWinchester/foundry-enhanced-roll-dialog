@@ -107,6 +107,26 @@
                 </div>
             </div>
         {{/each}}
+
+        {{#if ammo}}
+        <div class="form-group dnd5e">
+            <label>{{ammoItemName}}</label>
+            <span class="dialog tag">Ammunition</span>
+            <div class="toggle-value">
+                <label class="toggle-value">{{ammo}}</label>
+            </div>
+            <div class="toggle-container">
+                <input 
+                    type="checkbox"
+                    class="toggle"
+                    id="toggle-checkbox-ammo"
+                    data-attribute="@ammo"
+                    checked="checked"
+                >
+                <label class="toggle" for="toggle-checkbox-ammo">Toggle</label>
+            </div>
+        </div>
+        {{/if}}
     </div> {{!-- End toggle rows div  --}}
 
     <hr>

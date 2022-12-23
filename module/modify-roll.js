@@ -3,7 +3,7 @@ This is the class that will accept a D20 Roll instance and an obj with toggled c
 */
 
 export default class ModifyRoll {
-  singleSourceAttrs = ["@mod", "@prof", "@itemAttackBonus", "@abilityCheckBonus", "@toolBonus"];
+  singleSourceAttrs = ["@mod", "@prof", "@itemAttackBonus", "@abilityCheckBonus", "@toolBonus", "@ammo"];
 
   constructor(roll, element) {
     this.roll = roll;

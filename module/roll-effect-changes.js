@@ -42,6 +42,8 @@ export default class RollEffectChanges {
    * @type {Array<Object>} 
    */
   get changes() {
+    if (!this.actor) return [];
+    
     let c = this.actor.effects.map(effect => {
       const changes = effect.changes
         .filter(change => this.changeKeys.includes(change.key))

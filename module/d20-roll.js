@@ -27,7 +27,9 @@ export async function configureDialog({title, defaultRollMode, defaultAction=thi
     changes: this.data.action?.changes,
     itemAttackBonus: parseInt(this.data.itemAttackBonus) ? addPlusIfNotPresent(this.data.itemAttackBonus) : null,
     itemName: this.data.action?.itemName,
-    toolBonus: parseInt(this.data.toolBonus) ? addPlusIfNotPresent(this.data.toolBonus) : null
+    toolBonus: parseInt(this.data.toolBonus) ? addPlusIfNotPresent(this.data.toolBonus) : null,
+    ammo: parseInt(this.data.ammo) ? addPlusIfNotPresent(this.data.ammo) : null,
+    ammoItemName: this.data.action?.ammoItemName || "Ammunition"
   });
 
   let defaultButton = "normal";
