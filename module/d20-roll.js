@@ -10,7 +10,7 @@ export async function configureDialog({title, defaultRollMode, defaultAction=thi
 
   console.log(this.data);
 
-  defaultAbility = defaultAbility || this.data.defaultAbility || this.data.action?.item?.abilityMod;
+  defaultAbility = defaultAbility || this.data.defaultAbility || this.data.action?.itemAbilityMod;
 
   // Render the Dialog inner HTML
   const content = await renderTemplate("/modules/modify-rolls/templates/roll-dialog.hbs", {
@@ -26,7 +26,8 @@ export async function configureDialog({title, defaultRollMode, defaultAction=thi
     proficient: this.data.action?.proficient,
     changes: this.data.action?.changes,
     itemAttackBonus: parseInt(this.data.itemAttackBonus) ? addPlusIfNotPresent(this.data.itemAttackBonus) : null,
-    itemName: this.data.action?.item?.name,
+    itemName: this.data.action?.itemName,
+    toolBonus: parseInt(this.data.toolBonus) ? addPlusIfNotPresent(this.data.toolBonus) : null
   });
 
   let defaultButton = "normal";

@@ -7,21 +7,22 @@ Maybe there is an easier way to do this, but I'm not aware of it so far!
 
 /**
  * Gets relevant effect changes for a particular roll.
- * @param {Actor5e} actor        Actor associated with the role.
- * @param {Array}   parts        Array of roll formula parts.
- * @param {String}  rollType     One of "attack", "check", "save", or "skill".
- * @param {string}  rollSubType  Skill ID, ability ID, or attack type (e.g., mwak). Optional.
+ * @param {Actor5e} actor                 Actor associated with the role.
+ * @param {Array}   parts                 Array of roll formula parts.
+ * @param {String}  rollType              One of "attack", "check", "save", or "skill".
+ * @param {string}  rollSubType           Skill ID, ability ID, or attack type (e.g., mwak). Optional.
+ * @param {boolean} isCheckForSkillOrTool If rollType = "check" but changes apply to skill or tool roll, use unique attr names. Optional
  */
 export default class RollEffectChanges {
   attackRollTypes = ["attack"];
   nonAttackRollTypes = ["check", "save", "skill"];
 
-  constructor(actor, parts, rollType, rollSubType=null, isSkillAbility=false) {
+  constructor(actor, parts, rollType, rollSubType=null, isCheckForSkillOrTool=false) {
     this.actor = actor;
     this.parts = parts;
     this.rollType = rollType;
     this.rollSubType = rollSubType;
-    this.isSkillAbility = isSkillAbility;
+    this.isCheckForSkillOrTool = isCheckForSkillOrTool;
   }
 
   /**
@@ -32,8 +33,8 @@ export default class RollEffectChanges {
    * @param {string}  rollSubType  Skill ID, ability ID, or attack type (e.g., mwak). Optional.
    * @returns {Array<Object>}     Array of effect change objects with original effect included.
    */
-  static getChanges(actor, parts, rollType, rollSubType=null, isSkillAbility=false) {
-    return new this(actor, parts, rollType, rollSubType, isSkillAbility).changes;
+  static getChanges(actor, parts, rollType, rollSubType=null, isCheckForSkillOrTool=false) {
+    return new this(actor, parts, rollType, rollSubType, isCheckForSkillOrTool).changes;
   }
 
   /**
@@ -41,9 +42,6 @@ export default class RollEffectChanges {
    * @type {Array<Object>} 
    */
   get changes() {
-    console.log(this.rollType);
-    console.log(this.rollSubType);
-
     let c = this.actor.effects.map(effect => {
       const changes = effect.changes
         .filter(change => this.changeKeys.includes(change.key))
@@ -85,7 +83,7 @@ export default class RollEffectChanges {
 
     // Get global bonus key
     keys.push(this.globalBonusKeyFormula);
-    console.log(keys);
+
     return keys;
   }
 
@@ -126,7 +124,7 @@ export default class RollEffectChanges {
 
       if (this.rollSubType && key.includes(this.rollSubType)) {
         // specific bonus
-        if (this.isSkillAbility && this.rollType == "check") {
+        if (this.isCheckForSkillOrTool && this.rollType == "check") {
           // If checking for ability bonuses on skill rolls, need to pay special attention
           attr = "@abilityCheckBonus";
         } else {

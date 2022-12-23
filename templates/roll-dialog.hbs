@@ -65,6 +65,26 @@
             </div>
         </div>
         {{/if}}
+
+        {{#if toolBonus}}
+        <div class="form-group dnd5e">
+            <label>Tool Bonus</label>
+            <span class="dialog tag">Item</span>
+            <div class="toggle-value">
+                <label class="toggle-value">{{toolBonus}}</label>
+            </div>
+            <div class="toggle-container">
+                <input 
+                    type="checkbox"
+                    class="toggle"
+                    id="toggle-checkbox-tool-bonus"
+                    data-attribute="@toolBonus"
+                    checked="checked"
+                >
+                <label class="toggle" for="toggle-checkbox-tool-bonus">Toggle</label>
+            </div>
+        </div>
+        {{/if}}
         
         {{#each changes}}  
             <div class="form-group dnd5e {{#if this.effect.disabled }} toggle-disabled {{/if}}">
