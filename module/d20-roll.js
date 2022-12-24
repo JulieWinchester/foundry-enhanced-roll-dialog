@@ -1,16 +1,15 @@
 import ModifyRoll from "./modify-roll.js";
 
-Hooks.once('init', async function() {
-  libWrapper.register("modify-rolls", "game.dnd5e.dice.D20Roll.prototype.configureDialog", configureDialog, "OVERRIDE");
-  game.dnd5e.dice.D20Roll.prototype._onPartToggle = _onPartToggle;
-});
-
 export async function configureDialog({title, defaultRollMode, defaultAction=this.constructor.ADV_MODE.NORMAL, chooseModifier=false,
   defaultAbility, template}={}, options={}) {
 
   console.log(this.data);
 
   defaultAbility = defaultAbility || this.data.defaultAbility || this.data.action?.itemAbilityMod;
+
+  await loadTemplates({
+    toggleRow: "/modules/modify-rolls/templates/roll-dialog-toggle-row.hbs"
+  });
 
   // Render the Dialog inner HTML
   const content = await renderTemplate("/modules/modify-rolls/templates/roll-dialog.hbs", {
@@ -88,7 +87,7 @@ function addPlusIfNotPresent(value) {
   return value = "+".concat(value);
 }
 
-function _onPartToggle(event, html) {
+export function _onPartToggle(event, html) {
   event.preventDefault();
 
   // Target parent form-group has correct styling
@@ -113,8 +112,8 @@ async function _onAbilitySelect(abl, data, roll, html) {
   const mod = addPlusIfNotPresent(data.abilities[abl].mod);
 
   // Update ability modifier value
-  html[0].querySelector("label.ability").textContent = label;
-  html[0].querySelector("label.ability.toggle-value").textContent = mod;
+  html[0].querySelector("label.toggle-label").textContent = label;
+  html[0].querySelector("label.toggle-value").textContent = mod;
 
   // If ability check bonus, update
   const fg = html[0]

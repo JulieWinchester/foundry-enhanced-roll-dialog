@@ -1,0 +1,19 @@
+<div class="form-group dnd5e {{#if disabled }} toggle-disabled {{/if}}">
+    <label class="toggle-label">{{label}}</label>
+    <span class="dialog tag">{{ tag }}</span>
+    <div class="toggle-value">
+        <label class="toggle-value">{{value}}</label>
+    </div>
+    <div class="toggle-container">
+        <input 
+            type="checkbox"
+            class="toggle"
+            id="{{ inputIDPrefix }}{{ inputID }}"
+            data-change-value="{{ value }}"
+            data-attribute="{{ attr }}"
+            {{#if (not disabled) }} checked="checked" {{/if}}
+            {{#if preventToggle }} disabled {{/if}}
+        >
+        <label class="toggle" for="{{ inputIDPrefix }}{{ inputID }}">Toggle</label>
+    </div>
+</div>

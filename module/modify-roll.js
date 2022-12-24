@@ -49,7 +49,7 @@ export default class ModifyRoll {
   updateRollMultiSource() {
     const form = this.element.closest('form');
 
-    const attrChanges = Array.from(form.querySelectorAll("input.toggle-effect:checked"))
+    const attrChanges = Array.from(form.querySelectorAll("input.toggle:checked"))
       .filter(checkbox => checkbox.dataset.attribute == this.attribute)
       .map(checkbox => {
         let valueSplit = this.roll.constructor._splitOperators(checkbox.dataset.changeValue);
