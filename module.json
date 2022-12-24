@@ -32,7 +32,7 @@
     ]
 },
   "esmodules": [
-    "module/modifyRolls.js",
+    "module/module.js",
     "module/d20-roll.js"
   ],
   "styles": [
