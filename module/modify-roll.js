@@ -7,10 +7,8 @@ export default class ModifyRoll {
 
   constructor(roll, element) {
     this.roll = roll;
-    console.log(element);
     this.element = element;
     this.attribute = this.element.dataset.attribute;
-    console.log(this.attribute)
     this.rollData = roll.data;
     this.parts = roll.data.action.parts;
   }
@@ -22,13 +20,11 @@ export default class ModifyRoll {
       this.updateRollMultiSource();
     }
     this.sortParts();
-    console.log(this.parts);
 
-    this.roll.terms = this.roll.constructor.simplifyTerms(
-      this.removeDuplicateOperators(
-        this.roll.constructor.parse(
-          [this.roll.terms[0].formula].concat(this.parts).join("+"), this.rollData
-        )
+
+    this.roll.terms = this.removeDuplicateOperators(
+      this.roll.constructor.parse(
+        [this.roll.terms[0].formula].concat(this.parts).join("+"), this.rollData
       )
     );
     console.log(this.roll.terms)
@@ -83,8 +79,6 @@ export default class ModifyRoll {
    */
   removeDuplicateOperators(terms) {
     return terms.map( (term, index) => {
-      console.log(index);
-      console.log(term);
       if (
         index != 0 && 
         term instanceof OperatorTerm && 

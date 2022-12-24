@@ -1,4 +1,5 @@
 import ModifyRoll from "./modify-roll.js";
+import { evalExpression } from "./utils.js";
 
 export async function configureDialog({title, defaultRollMode, defaultAction=this.constructor.ADV_MODE.NORMAL, chooseModifier=false,
   defaultAbility, template}={}, options={}) {
@@ -10,6 +11,15 @@ export async function configureDialog({title, defaultRollMode, defaultAction=thi
   await loadTemplates({
     toggleRow: "/modules/modify-rolls/templates/roll-dialog-toggle-row.hbs"
   });
+
+  let changes = [];
+  if (this.data.action?.changes) {
+    changes = this.data.action?.changes.map(change => foundry.utils.mergeObject(change, 
+      { 
+        valueText: addPlusIfNotPresent(evalExpression(change, this.data))
+      }
+    ));
+  }
 
   // Render the Dialog inner HTML
   const content = await renderTemplate("/modules/modify-rolls/templates/roll-dialog.hbs", {
@@ -23,7 +33,7 @@ export async function configureDialog({title, defaultRollMode, defaultAction=thi
     mod: getInitialModifier(this.data, defaultAbility),
     prof: addPlusIfNotPresent(this.data.prof),
     proficient: this.data.action?.proficient,
-    changes: this.data.action?.changes,
+    changes: changes,
     itemAttackBonus: parseInt(this.data.itemAttackBonus) ? addPlusIfNotPresent(this.data.itemAttackBonus) : null,
     itemName: this.data.action?.itemName,
     toolBonus: parseInt(this.data.toolBonus) ? addPlusIfNotPresent(this.data.toolBonus) : null,
@@ -83,6 +93,7 @@ function getInitialModifier(data, defaultAbility) {
 
 function addPlusIfNotPresent(value) {
   if (!value) return "0";
+  value = `${value}`;
   if (value[0] && OperatorTerm.OPERATORS.includes(value[0])) return value;
   return value = "+".concat(value);
 }

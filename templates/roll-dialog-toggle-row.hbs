@@ -2,7 +2,7 @@
     <label class="toggle-label">{{label}}</label>
     <span class="dialog tag">{{ tag }}</span>
     <div class="toggle-value">
-        <label class="toggle-value">{{value}}</label>
+        <label class="toggle-value">{{#if valueText}} {{valueText}} {{else}} {{value}} {{/if}}</label>
     </div>
     <div class="toggle-container">
         <input 
