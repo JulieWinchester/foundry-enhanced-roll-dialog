@@ -136,9 +136,13 @@ async function _onAbilitySelect(abl, data, roll, html) {
       if (fg.style.display == "none") fg.style.display = "flex";
     } else {
       // add
-      const newElement = await renderTemplate("/modules/modify-rolls/templates/ability-check-bonus-row.hbs", {
+      const newElement = await renderTemplate("/modules/modify-rolls/templates/roll-dialog-toggle-row.hbs", {
         label: genericLabel,
-        value: value
+        tag: "Effect",
+        value: value,
+        attr: "@abilityCheckBonus",
+        inputID: "toggle-checkbox-ability-check-bonus",
+        formGroupClass: "ability-check-bonus",
       });
       $("form.roll-toggle-dialog div.toggle-rows").append(newElement);
 
