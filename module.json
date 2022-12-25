@@ -1,7 +1,7 @@
 {
-  "id": "modify-rolls",
-  "title": "Modify Rolls",
-  "description": "TBA",
+  "id": "enhanced-roll-dialog",
+  "title": "Enhanced Roll Dialog",
+  "description": "Enhances and improves D&D5E roll dialog with display and toggle of roll parts",
   "version": "This is auto replaced",
   "library": "false",
   "manifestPlusVersion": "1.2.0",
@@ -32,8 +32,7 @@
     ]
 },
   "esmodules": [
-    "module/module.js",
-    "module/d20-roll.js"
+    "module/erd.js"
   ],
   "styles": [
     "styles/module.css"
