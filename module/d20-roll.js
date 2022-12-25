@@ -9,7 +9,7 @@ export async function configureDialog({title, defaultRollMode, defaultAction=thi
   defaultAbility = defaultAbility || this.data.defaultAbility || this.data.action?.itemAbilityMod;
 
   await loadTemplates({
-    toggleRow: "/modules/modify-rolls/templates/roll-dialog-toggle-row.hbs"
+    toggleRow: "/modules/enhanced-roll-dialog/templates/roll-dialog-toggle-row.hbs"
   });
 
   let changes = [];
@@ -22,7 +22,7 @@ export async function configureDialog({title, defaultRollMode, defaultAction=thi
   }
 
   // Render the Dialog inner HTML
-  const content = await renderTemplate("/modules/modify-rolls/templates/roll-dialog.hbs", {
+  const content = await renderTemplate("/modules/enhanced-roll-dialog/templates/roll-dialog.hbs", {
     formula: `${this.formula} + @bonus`,
     defaultRollMode,
     rollModes: CONFIG.Dice.rollModes,
@@ -147,7 +147,7 @@ async function _onAbilitySelect(abl, data, roll, html) {
       if (fg.style.display == "none") fg.style.display = "flex";
     } else {
       // add
-      const newElement = await renderTemplate("/modules/modify-rolls/templates/roll-dialog-toggle-row.hbs", {
+      const newElement = await renderTemplate("/modules/enhanced-roll-dialog/templates/roll-dialog-toggle-row.hbs", {
         label: genericLabel,
         tag: "Effect",
         value: value,
