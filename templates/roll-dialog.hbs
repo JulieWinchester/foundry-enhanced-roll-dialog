@@ -1,7 +1,7 @@
 <form class="roll-toggle-dialog">
     <div class="form-group toggle-header" style="margin-bottom: 0;">
-        <label>Modifier</label>
-        <label class="toggle-header-type">Type</label>
+        <label>{{localize 'ERD.labelHeader'}}</label>
+        <label class="toggle-header-type">{{localize 'ERD.tagHeader'}}</label>
     </div>
     <hr class="dialog">
 
@@ -9,7 +9,7 @@
         {{#if itemAttackBonus}}
             {{> toggleRow 
                 label=itemName
-                tag="Item"
+                tag=(localize 'ERD.item')
                 value=itemAttackBonus 
                 attr="@itemAttackBonus" 
                 inputID="toggle-checkbox-item-attack-bonus"
@@ -19,7 +19,7 @@
         {{#if mod includeZero=true}}
             {{> toggleRow 
                 label=defaultAbilityLabel
-                tag="Ability"
+                tag=(localize 'DND5E.Ability')
                 value=mod 
                 attr="@mod" 
                 inputID="toggle-checkbox-ability"
@@ -28,8 +28,8 @@
 
         {{#if prof includeZero=true}}
             {{> toggleRow 
-                label="Proficiency"
-                tag="Proficiency"
+                label=(localize 'DND5E.Proficiency')
+                tag=(localize 'DND5E.Proficiency')
                 value=prof 
                 attr="@prof" 
                 disabled=(not proficient)
@@ -39,8 +39,8 @@
 
         {{#if toolBonus}}
             {{> toggleRow 
-                label="Tool Bonus"
-                tag="Item"
+                label=(localize 'DND5E.ItemToolBonus')
+                tag=(localize 'ERD.item')
                 value=toolBonus 
                 attr="@toolBonus" 
                 inputID="toggle-checkbox-tool-bonus"
@@ -50,7 +50,7 @@
         {{#each changes}}  
             {{> toggleRow 
                 label=this.effect.label 
-                tag="Effect"
+                tag=(localize 'ERD.effect')
                 value=this.value
                 valueText=this.valueText
                 attr=this.attr 
@@ -63,7 +63,7 @@
         {{#if ammo}}
             {{> toggleRow 
                 label=ammoItemName
-                tag="Ammunition"
+                tag=(localize 'DND5E.ConsumableAmmunition')
                 value=ammo 
                 attr="@ammo" 
                 inputID="toggle-checkbox-ammo"

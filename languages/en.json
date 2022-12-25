@@ -1,3 +1,6 @@
 {
-    "MODULE.hello": "hello"
+    "ERD.labelHeader": "Modifier",
+    "ERD.tagHeader": "Type",
+    "ERD.effect": "Effect",
+    "ERD.item": "Item"
 }

@@ -28,7 +28,7 @@ export async function configureDialog({title, defaultRollMode, defaultAction=thi
     rollModes: CONFIG.Dice.rollModes,
     chooseModifier,
     defaultAbility,
-    defaultAbilityLabel: CONFIG.DND5E.abilities[defaultAbility] || "Ability",
+    defaultAbilityLabel: CONFIG.DND5E.abilities[defaultAbility] || game.i18n.localize("DND5E.Ability"),
     abilities: CONFIG.DND5E.abilities,
     mod: getInitialModifier(this.data, defaultAbility),
     prof: addPlusIfNotPresent(this.data.prof),
@@ -38,7 +38,7 @@ export async function configureDialog({title, defaultRollMode, defaultAction=thi
     itemName: this.data.action?.itemName,
     toolBonus: parseInt(this.data.toolBonus) ? addPlusIfNotPresent(this.data.toolBonus) : null,
     ammo: parseInt(this.data.ammo) ? addPlusIfNotPresent(this.data.ammo) : null,
-    ammoItemName: this.data.action?.ammoItemName || "Ammunition"
+    ammoItemName: this.data.action?.ammoItemName || game.i18n.localize("DND5E.ConsumableAmmunition")
   });
 
   let defaultButton = "normal";
@@ -131,7 +131,7 @@ async function _onAbilitySelect(abl, data, roll, html) {
     .querySelector("input[data-attribute='@abilityCheckBonus']")
     ?.closest("div.form-group");
   if (data.abilities[abl].bonuses?.check) {
-    const genericLabel = "Ability Check Bonus"
+    const genericLabel = game.i18n.localize("DND5E.ActionAbil");
     const value = addPlusIfNotPresent(data.abilities[abl].bonuses.check);
 
     // Bonus exists, must update or add
@@ -149,7 +149,7 @@ async function _onAbilitySelect(abl, data, roll, html) {
       // add
       const newElement = await renderTemplate("/modules/enhanced-roll-dialog/templates/roll-dialog-toggle-row.hbs", {
         label: genericLabel,
-        tag: "Effect",
+        tag: game.i18n.localize("ERD.effect"),
         value: value,
         attr: "@abilityCheckBonus",
         inputID: "toggle-checkbox-ability-check-bonus",
