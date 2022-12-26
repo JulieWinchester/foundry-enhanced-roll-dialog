@@ -36,7 +36,7 @@ export function rollAttackWrapper(wrapped, options={}) {
     changes: RollEffectChanges.getChanges(this.actor, parts, "attack", this.system.actionType),
     itemName: this.name || "",
     itemAbilityMod: this.abilityMod,
-    proficient: this.system.proficient,
+    proficient: !["weapon", "consumable"].includes(this.type) || this.system.proficient,
     ammoItemName: ammoItemName
   };
 
