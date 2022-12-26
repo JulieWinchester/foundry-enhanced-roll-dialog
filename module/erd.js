@@ -1,3 +1,4 @@
+import ERD from "./config.js";
 import { rollAttackWrapper, rollToolCheckWrapper } from "./item.js";
 import { rollAbilitySaveWrapper, rollAbilityTestWrapper, rollSkillWrapper } from "./actor.js";
 import { configureDialog, _onPartToggle } from "./d20-roll.js";
@@ -10,4 +11,6 @@ Hooks.once('init', async function() {
   libWrapper.register("enhanced-roll-dialog", "CONFIG.Item.documentClass.prototype.rollToolCheck", rollToolCheckWrapper, "WRAPPER");
   libWrapper.register("enhanced-roll-dialog", "game.dnd5e.dice.D20Roll.prototype.configureDialog", configureDialog, "OVERRIDE");
   game.dnd5e.dice.D20Roll.prototype._onPartToggle = _onPartToggle;
+  CONFIG.ERD = ERD;
 });
+

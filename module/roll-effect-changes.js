@@ -17,7 +17,7 @@ export default class RollEffectChanges {
   attackRollTypes = ["attack"];
   nonAttackRollTypes = ["check", "save", "skill"];
 
-  constructor(actor, parts, rollType, rollSubType=null, isCheckForSkillOrTool=false) {
+  constructor(actor, parts, rollType, rollSubType, isCheckForSkillOrTool=false) {
     this.actor = actor;
     this.parts = parts;
     this.rollType = rollType;
@@ -33,7 +33,7 @@ export default class RollEffectChanges {
    * @param {string}  rollSubType  Skill ID, ability ID, or attack type (e.g., mwak). Optional.
    * @returns {Array<Object>}     Array of effect change objects with original effect included.
    */
-  static getChanges(actor, parts, rollType, rollSubType=null, isCheckForSkillOrTool=false) {
+  static getChanges(actor, parts, rollType, rollSubType, isCheckForSkillOrTool=false) {
     return new this(actor, parts, rollType, rollSubType, isCheckForSkillOrTool).changes;
   }
 
@@ -86,7 +86,7 @@ export default class RollEffectChanges {
     // Get global bonus key
     keys.push(this.globalBonusKeyFormula);
 
-    return keys;
+    return keys.concat(this.additionalKeys);
   }
 
   /**
@@ -100,6 +100,16 @@ export default class RollEffectChanges {
 
       return `system.bonuses.abilities.${this.rollType}`
     }
+  }
+
+  /**
+   * Additional change key(s) not captured by core DND5E key formulas.
+   * @type {Array<object>} 
+   */
+  get additionalKeys() {
+    return (CONFIG.ERD.addlEffectKeys[this.rollType] || [])
+      .filter(keyConfig => keyConfig.rollSubTypes.includes(this.rollSubType))
+      .map(keyConfig => keyConfig.key);
   }
   
   /**
