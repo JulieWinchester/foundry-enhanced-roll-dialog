@@ -1,5 +1,4 @@
 // This logic is taken from DAE's applyDaeEffects() method
-
 export function evalExpression(change, rollData) {  
   console.log("DEBUG: enhanced-roll-dialog | evalChangeValue: Doing eval of ", change, change.value);
   
@@ -25,4 +24,21 @@ export function evalExpression(change, rollData) {
   }
 
   return value;
+}
+
+export function isFallbackChangeNeeded(attr, parts, rollData, changes) {
+  return parts.includes(attr) && rollData[attr.substring(1)] && !changes.some(c => c.attr == attr);
+}
+
+export function fallbackChange(attr, rollData) {
+  let change = {
+    effect: { label: game.i18n.localize("ERD.unknown") },
+    originTag: "?",
+    value: rollData[attr.substring(1)],
+    attr: attr
+  };
+
+  change.valueText = evalExpression(change, rollData);
+
+  return change; 
 }

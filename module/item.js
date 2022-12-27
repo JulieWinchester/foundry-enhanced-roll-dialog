@@ -1,4 +1,5 @@
 import RollEffectChanges from "./roll-effect-changes.js";
+import { isFallbackChangeNeeded, fallbackChange } from "./utils.js";
 
 export function rollAttackWrapper(wrapped, options={}) {
   if ( !this.hasAttack ) throw new Error("You may not place an Attack Roll with this Item.");
@@ -29,11 +30,18 @@ export function rollAttackWrapper(wrapped, options={}) {
     ammoItemName = ammoItem.name;
   }
 
+  let changes = RollEffectChanges.getChanges(this.actor, parts, "attack", this.system.actionType);
+
+  // Add @actorAttackBonus fallback change if effects not recognized
+  if (isFallbackChangeNeeded("@actorAttackBonus", parts, addlRollData, changes)) {
+    changes.push(fallbackChange("@actorAttackBonus", addlRollData));
+  }
+
   addlRollData.action = {
     attributeOrder: ["@itemAttackBonus", "@mod", "@prof", "@actorAttackBonus", "@ammo"],
     mode: "attack",
     parts: parts,
-    changes: RollEffectChanges.getChanges(this.actor, parts, "attack", this.system.actionType),
+    changes: changes,
     itemName: this.name || "",
     itemAbilityMod: this.abilityMod,
     proficient: !["weapon", "consumable"].includes(this.type) || this.system.proficient,

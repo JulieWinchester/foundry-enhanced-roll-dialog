@@ -4,5 +4,6 @@
     "ERD.effect": "Effect",
     "ERD.item": "Item",
     "ERD.misc": "Misc.",
-    "ERD.itemMisc": "Item (Misc.)"
+    "ERD.itemMisc": "Item (Misc.)",
+    "ERD.unknown": "Unknown Modifier"
 }

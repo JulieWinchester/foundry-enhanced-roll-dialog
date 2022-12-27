@@ -60,12 +60,12 @@ export default class RollEffectChanges {
 
     // Skill rolls are also ability checks, have to watch out for that
     if (this.rollType == "skill") {
-      return c.concat(this.constructor.getChanges(
+      c = c.concat(this.constructor.getChanges(
         this.actor, this.parts, "check", CONFIG.DND5E.skills[this.rollSubType].ability, true
       ));
-    } else {
-      return c;
     }
+
+    return c;
   }
 
   /**
