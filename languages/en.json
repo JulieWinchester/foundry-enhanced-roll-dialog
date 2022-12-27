@@ -2,5 +2,7 @@
     "ERD.labelHeader": "Modifier",
     "ERD.tagHeader": "Type",
     "ERD.effect": "Effect",
-    "ERD.item": "Item"
+    "ERD.item": "Item",
+    "ERD.misc": "Misc.",
+    "ERD.itemMisc": "Item (Misc.)"
 }

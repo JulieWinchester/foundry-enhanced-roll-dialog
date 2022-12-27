@@ -50,7 +50,7 @@
         {{#each changes}}  
             {{> toggleRow 
                 label=this.effect.label 
-                tag=(localize 'ERD.effect')
+                tag=this.originTag
                 value=this.value
                 valueText=this.valueText
                 attr=this.attr 

@@ -50,12 +50,13 @@ export default class RollEffectChanges {
         .map(change => foundry.utils.mergeObject(change, 
           { 
             effect: effect, 
-            attr: this.attributeForChange(change.key)
+            attr: this.attributeForChange(change.key),
+            originTag: this.originTag(effect)
           }
         ));
 
       return ( !(effect.isSuppressed) && changes.length ) ? changes : null;
-    }).filter(effect => effect).flat();
+    }).filter(changeArray => changeArray).flat();
 
     // Skill rolls are also ability checks, have to watch out for that
     if (this.rollType == "skill") {
@@ -156,5 +157,37 @@ export default class RollEffectChanges {
     } else {
       return null;
     }
+  }
+
+  originTag(effect) {
+    let tag = game.i18n.localize("ERD.misc");
+
+    if (effect && effect.origin) {
+      // try to grab origin entity, but this doesn't always work
+      let originEntity = fromUuidSync(effect.origin);
+      if (originEntity) {
+        switch (originEntity.documentName) {
+          case "Item":
+            tag = (originEntity.type == "spell") ? game.i18n.localize("DND5E.ItemTypeSpell") : game.i18n.localize("ERD.item")
+            break;
+          case "Token":
+            tag = (originEntity.actorId == this.actor.id) ? game.i18n.localize("DND5E.TargetSelf") : game.i18n.localize("DND5E.Target");
+            break;
+          case "Actor":
+            tag = (originEntity.id == this.actor.id) ? game.i18n.localize("DND5E.TargetSelf") : game.i18n.localize("DND5E.Target");
+            break;
+          default:
+            tag = game.i18n.localize("ERD.effect");
+            break;
+        }
+      } else {
+        // Simple fallback method for at least one case I've seen
+        if (/Item.*/.test(effect.origin)) {
+          tag = game.i18n.localize("ERD.itemMisc");
+        }
+      }
+    }
+
+    return tag;
   }
 }
