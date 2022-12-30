@@ -24,6 +24,14 @@ ERD.addlEffectKeys = {
     { key: "system.bonuses.All-Attacks", rollSubTypes: ["msak", "mwak", "rsak", "rwak"] },
     { key: "system.bonuses.spell.attack", rollSubTypes: ["msak", "rsak"] },
     { key: "system.bonuses.weapon.attack", rollSubTypes: ["mwak", "rwak"] },
+  ],
+  damage: [
+    { key: "system.bonuses.All-Damage", rollSubTypes: ["msak", "mwak", "rsak", "rwak"] },
+    { key: "system.bonuses.spell.damage", rollSubTypes: ["msak", "rsak"] },
+    { key: "system.bonuses.weapon.damage", rollSubTypes: ["mwak", "rwak"] },
+    { key: "system.bonuses.heal.damage", rollSubTypes: ["heal"] },
+    { key: "system.bonuses.abil.damage", rollSubTypes: ["abil"] },
+    { key: "system.bonuses.save.damage", rollSubTypes: ["save"] },
   ]
 }
 

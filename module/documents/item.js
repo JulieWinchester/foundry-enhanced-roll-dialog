@@ -1,6 +1,7 @@
 import D20RollEffectChanges from "../d20-roll-effect-changes.js";
+import DamageRollEffectChanges from "../damage-roll-effect-changes.js";
 import RollPartInfo from "../roll-part-info.js";
-import { isFallbackChangeNeeded, fallbackChange, evalExpression } from "../utils.js";
+import { isFallbackChangeNeeded, fallbackChange, evalExpression, dmgTypeLabel, removeDmgTypeFromStr } from "../utils.js";
 
 export function rollAttackWrapper(wrapped, options={}) {
   if ( !this.hasAttack ) throw new Error("You may not place an Attack Roll with this Item.");
@@ -123,9 +124,9 @@ export function rollDamageWrapper(wrapped, {critical=false, event=null, spellLev
     addlRollData[`dmg${idx}`] = p; 
     return new RollPartInfo({
       label: this.name || "", 
-      tag: dmg.parts[idx][1], 
+      tag: dmgTypeLabel(dmg.parts[idx][1]) || game.i18n.localize("ERD.unknown"), 
       value: p, 
-      valueText: evalExpression(p, rollData),
+      valueText: removeDmgTypeFromStr(evalExpression(p, rollData)),
       attr: `@dmg${idx}`
     });
   });
@@ -134,6 +135,7 @@ export function rollDamageWrapper(wrapped, {critical=false, event=null, spellLev
   parts = partsInfo.map(p => p.attr);
   const initialAttributeOrder = parts;
 
+  console.log(this.actor?.system);
   // Add damage bonus formula
   const actorBonus = foundry.utils.getProperty(this.actor.system, `bonuses.${this.system.actionType}`) || {};
   if ( actorBonus.damage && (parseInt(actorBonus.damage) !== 0) ) {
@@ -149,14 +151,21 @@ export function rollDamageWrapper(wrapped, {critical=false, event=null, spellLev
     const ammoDmgTypes = ammoDmg.parts.map(p => p[1]);
     partsInfo.push(new RollPartInfo({
       label: this._ammo.name, 
-      tag: ammoDmgTypes.every((d => d == ammoDmgTypes[0])) ? ammoDmgTypes[0] : "multiple", 
+      tag: ammoDmgTypes.every((d => d == ammoDmgTypes[0])) ? ammoDmgTypes[0] : game.i18n.localize("ERD.multiple"), 
       value: ammoDmgValue, 
-      valueText: evalExpression(ammoDmgValue, rollData),
+      valueText: removeDmgTypeFromStr(evalExpression(ammoDmgValue, rollData)),
       attr: `@ammo`,
       preventToggle: true
     }));
   }
 
+  const changesInfo = DamageRollEffectChanges
+    .getChanges(this.actor, this.system.actionType, dmg.parts[0]?.[1])
+    .map(change => foundry.utils.mergeObject(
+      change, { valueText: removeDmgTypeFromStr(evalExpression(change.value, rollData)) }
+    ));
+
+  // TODO add fallback after refactoring non-damage to work with RollPartInfo
   // if (isFallbackChangeNeeded("@actorDamageBonus", parts, rollData, partsInfo)) {
   //   changes.push(fallbackChange("@actorAttackBonus", addlRollData));
   // }
@@ -165,7 +174,7 @@ export function rollDamageWrapper(wrapped, {critical=false, event=null, spellLev
     attributeOrder: initialAttributeOrder.concat(["@actorDamageBonus", "@ammo"]),
     mode: "damage",
     parts,
-    partsInfo,
+    partsInfo: partsInfo.concat(changesInfo),
   }
 
   foundry.utils.mergeObject(options, { parts, data: addlRollData });

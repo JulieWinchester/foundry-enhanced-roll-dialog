@@ -31,7 +31,7 @@ export function isFallbackChangeNeeded(attr, parts, rollData, changes) {
 
 export function fallbackChange(attr, rollData) {
   let change = {
-    effect: { label: game.i18n.localize("ERD.unknown") },
+    effect: { label: game.i18n.localize("ERD.unknownModifier") },
     originTag: "?",
     value: rollData[attr.substring(1)],
     attr: attr
@@ -40,4 +40,25 @@ export function fallbackChange(attr, rollData) {
   change.valueText = evalExpression(change, rollData);
 
   return change; 
+}
+
+export function parseDamageType(dmg) {
+  const dmgType = dmg.match(/\[(.*?)\]/);
+  return dmgType ? dmgTypeLabel(dmgType[1]) : null;
+}
+
+export function dmgTypeLabel(dmgType) {
+  if (!dmgType) return null;
+  const damageLabels = { ...CONFIG.DND5E.damageTypes, ...CONFIG.DND5E.healingTypes };
+  if (dmgType.split(',').length > 1) {
+    return "Multiple";
+  } else if (damageLabels[dmgType]) {
+    return damageLabels[dmgType];
+  } else {
+    return null;
+  }
+}
+
+export function removeDmgTypeFromStr(value) {
+  return (value || "").replace(/\[(.*?)\]/, ""); 
 }

@@ -3,7 +3,9 @@
     "ERD.tagHeader": "Type",
     "ERD.effect": "Effect",
     "ERD.item": "Item",
-    "ERD.misc": "Misc.",
     "ERD.itemMisc": "Item (Misc.)",
-    "ERD.unknown": "Unknown Modifier"
+    "ERD.misc": "Misc.",
+    "ERD.multiple": "Multiple",
+    "ERD.unknown": "Unknown",
+    "ERD.unknownModifier": "Unknown Modifier"
 }

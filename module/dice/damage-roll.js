@@ -8,12 +8,6 @@ export async function configureDamageRollDialog({title, defaultRollMode, default
     toggleRow: "/modules/enhanced-roll-dialog/templates/roll-dialog-toggle-row.hbs"
   });
 
-  const rows = this.data.action.partsInfo.map(row => 
-    foundry.utils.mergeObject(
-      row, { dmgTypeHtml: CONFIG.ERD.damageTypeIcons[row.dmgType] }
-    )
-  );
-
   // Render the Dialog inner HTML
   const content = await renderTemplate("/modules/enhanced-roll-dialog/templates/roll-dialog-new.hbs", {
     formula: `${this.formula} + @bonus`,

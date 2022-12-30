@@ -4,7 +4,7 @@ It's likely that each general category of flag will need to be handled separatel
 AKA, each category of flag needs to be checked to see if/how it affects the roll
 Maybe there is an easier way to do this, but I'm not aware of it so far!
 */
-
+// TODO: Remove parts! Not used or needed!
 /**
  * Gets relevant effect changes for a particular roll.
  * @param {Actor5e} actor                 Actor associated with the role.
