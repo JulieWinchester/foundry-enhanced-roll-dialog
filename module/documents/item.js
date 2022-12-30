@@ -1,4 +1,4 @@
-import RollEffectChanges from "../roll-effect-changes.js";
+import D20RollEffectChanges from "../d20-roll-effect-changes.js";
 import RollPartInfo from "../roll-part-info.js";
 import { isFallbackChangeNeeded, fallbackChange, evalExpression } from "../utils.js";
 
@@ -31,7 +31,7 @@ export function rollAttackWrapper(wrapped, options={}) {
     ammoItemName = ammoItem.name;
   }
 
-  let changes = RollEffectChanges.getChanges(this.actor, parts, "attack", this.system.actionType);
+  let changes = D20RollEffectChanges.getChanges(this.actor, parts, "attack", this.system.actionType);
 
   // Add @actorAttackBonus fallback change if effects not recognized
   if (isFallbackChangeNeeded("@actorAttackBonus", parts, addlRollData, changes)) {
@@ -78,7 +78,7 @@ export function rollToolCheckWrapper(wrapped, options) {
         attributeOrder: baseAttributeOrder.concat(addlAttributeOrder),
         mode: "check",
         parts: parts,
-        changes: RollEffectChanges.getChanges(this.actor, parts, "check", abl, true),
+        changes: D20RollEffectChanges.getChanges(this.actor, parts, "check", abl, true),
         item: {
           name: this.name || ""
         },

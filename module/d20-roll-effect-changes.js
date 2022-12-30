@@ -13,7 +13,7 @@ Maybe there is an easier way to do this, but I'm not aware of it so far!
  * @param {string}  rollSubType           Skill ID, ability ID, or attack type (e.g., mwak). Optional.
  * @param {boolean} isCheckForSkillOrTool If rollType = "check" but changes apply to skill or tool roll, use unique attr names. Optional
  */
-export default class RollEffectChanges {
+export default class D20RollEffectChanges {
   attackRollTypes = ["attack"];
   nonAttackRollTypes = ["check", "save", "skill"];
 

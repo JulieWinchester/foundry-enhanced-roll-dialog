@@ -6,7 +6,7 @@ Item5E.rollAttack gets roll parts from another func that is easily wrapped, not 
 Alternatively, could override entire Actor roll funcs, but probably best not to do that. 
 */
 
-import RollEffectChanges from "../../roll-effect-changes.js";
+import D20RollEffectChanges from "../../d20-roll-effect-changes.js";
 
 export function rollSkillWrapper(wrapped, skillId, options) {
   const skl = this.system.skills[skillId];
@@ -33,7 +33,7 @@ export function rollSkillWrapper(wrapped, skillId, options) {
         attributeOrder: baseAttributeOrder.concat(addlAttributeOrder),
         mode: "skill",
         parts: parts,
-        changes: RollEffectChanges.getChanges(this, parts, "skill", skillId),
+        changes: D20RollEffectChanges.getChanges(this, parts, "skill", skillId),
         skill: skillId,
         proficient: skl.proficient
       }
@@ -68,7 +68,7 @@ export function rollAbilityTestWrapper(wrapped, abilityId, options) {
         attributeOrder: baseAttributeOrder.concat(addlAttributeOrder),
         mode: "check",
         parts: parts,
-        changes: RollEffectChanges.getChanges(this, parts, "check", abilityId),
+        changes: D20RollEffectChanges.getChanges(this, parts, "check", abilityId),
         ability: abilityId,
         proficient: abl?.checkProf.hasProficiency
       }
@@ -104,7 +104,7 @@ export function rollAbilitySaveWrapper(wrapped, abilityId, options) {
         attributeOrder: baseAttributeOrder.concat(addlAttributeOrder),
         mode: "save",
         parts: parts,
-        changes: RollEffectChanges.getChanges(this, parts, "save", abilityId),
+        changes: D20RollEffectChanges.getChanges(this, parts, "save", abilityId),
         ability: abilityId,
         proficient: abl?.saveProf.hasProficiency
       }
