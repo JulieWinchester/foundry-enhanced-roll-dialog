@@ -1,8 +1,10 @@
+import RollPartInfo from "./roll-part-info.js";
+
 // This logic is taken from DAE's applyDaeEffects() method
-export function evalExpression(change, rollData) {  
-  console.log("DEBUG: enhanced-roll-dialog | evalChangeValue: Doing eval of ", change, change.value);
+export function evalExpression(value, rollData) {  
+  console.log("DEBUG: enhanced-roll-dialog | evalExpression: Doing eval of ", value);
   
-  let value = change.value;
+  value = `${value}`;
   value = value.replace("@item.level", "@itemLevel");
 
   // Replace @ attributes
@@ -14,11 +16,11 @@ export function evalExpression(change, rollData) {
   catch (err) { // safeEval failed try a roll
     try {
         console.log("enhanced-roll-dialog | encountered dice expression, will try to parse");
-        console.log(`Change is ${change.key}: ${change.value}`);
+        console.log(`Value is ${value}`);
         value = `${new Roll(value).evaluate({ async: false }).formula}`;
     }
     catch (err) {
-        console.log("enhanced-roll-dialog | change value calculation failed for", this, change);
+        console.log("enhanced-roll-dialog | value calculation failed for", this, value);
         console.log(err);
     }
   }
@@ -26,19 +28,46 @@ export function evalExpression(change, rollData) {
   return value;
 }
 
-export function isFallbackChangeNeeded(attr, parts, rollData, changes) {
-  return parts.includes(attr) && rollData[attr.substring(1)] && !changes.some(c => c.attr == attr);
+export function isFallbackChangeNeeded(attr, parts, rollData, rollPartInfoArray) {
+  return parts.includes(attr) && 
+    rollData[attr.substring(1)] && 
+    !rollPartInfoArray.some(i => i.attr == attr);
 }
 
 export function fallbackChange(attr, rollData) {
-  let change = {
-    effect: { label: game.i18n.localize("ERD.unknown") },
-    originTag: "?",
-    value: rollData[attr.substring(1)],
+  return new RollPartInfo({
+    label: game.i18n.localize("ERD.unknownModifier"), 
+    tag: game.i18n.localize("ERD.unknown"), 
+    value: rollData[attr.substring(1)], 
+    valueText: addPlusIfNotPresent(evalExpression(rollData[attr.substring(1)], rollData)),
     attr: attr
-  };
+  });
+}
 
-  change.valueText = evalExpression(change, rollData);
+export function parseDamageType(dmg) {
+  const dmgType = dmg.match(/\[(.*?)\]/);
+  return dmgType ? dmgTypeLabel(dmgType[1]) : null;
+}
 
-  return change; 
+export function dmgTypeLabel(dmgType) {
+  if (!dmgType) return null;
+  const damageLabels = { ...CONFIG.DND5E.damageTypes, ...CONFIG.DND5E.healingTypes };
+  if (dmgType.split(',').length > 1) {
+    return "Multiple";
+  } else if (damageLabels[dmgType]) {
+    return damageLabels[dmgType];
+  } else {
+    return null;
+  }
+}
+
+export function removeDmgTypeFromStr(value) {
+  return (value || "").replace(/\[(.*?)\]/, ""); 
+}
+
+export function addPlusIfNotPresent(value) {
+  if (!value) return "0";
+  value = `${value}`;
+  if (value[0] && OperatorTerm.OPERATORS.includes(value[0])) return value;
+  return value = "+".concat(value);
 }

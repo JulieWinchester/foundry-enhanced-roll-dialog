@@ -21,11 +21,14 @@ export default class ModifyRoll {
     }
     this.sortParts();
 
+    const newFormula = ( this.rollData.action?.mode == "damage" ) ? 
+      this.parts.join("+") : 
+      [this.roll.terms[0].formula].concat(this.parts).join("+");
+
+    console.log(newFormula);
 
     this.roll.terms = this.removeDuplicateOperators(
-      this.roll.constructor.parse(
-        [this.roll.terms[0].formula].concat(this.parts).join("+"), this.rollData
-      )
+      this.roll.constructor.parse(newFormula, this.rollData)
     );
     console.log(this.roll.terms)
     this.roll._formula = this.roll.constructor.getFormula(this.roll.terms);

@@ -53,15 +53,24 @@ label.toggle-value {
 }
 
 div.toggle-value {
-  flex: 1 !important;
+  flex: 1.0 !important;
   text-align: right;
+}
+
+div.toggle-rows.tag-small div.toggle-value {
+	flex: 1.5 !important;
 }
 
 span.dialog.tag {
   flex: 1.5;
   text-align: center;
+	text-transform: capitalize;
   padding: 0 2px;
   margin: 0;
+}
+
+div.toggle-rows.tag-small span.dialog.tag {
+	flex: 1.0
 }
 
 hr.dialog {
