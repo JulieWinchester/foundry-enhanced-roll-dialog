@@ -51,8 +51,6 @@ export default class D20RollEffectChanges {
       return ( !(effect.isSuppressed) && changes.length ) ? changes : null;
     }).filter(changeArray => changeArray).flat();
 
-    console.log(c)
-
     let changePartsInfo = c.map(change => new RollPartInfo({
       label: change.effect.label,
       tag: this.originTag(change.effect),
@@ -67,8 +65,6 @@ export default class D20RollEffectChanges {
         this.actor, "check", CONFIG.DND5E.skills[this.rollSubType].ability, true
       ));
     }
-
-    console.log(changePartsInfo);
 
     return changePartsInfo;
   }
