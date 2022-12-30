@@ -1,4 +1,5 @@
 import ModifyRoll from "./modify-roll.js";
+import { addPlusIfNotPresent } from "./utils.js";
 
 // When roll part is toggled, update UI and modify roll
 export function _onPartToggle(event, roll, html) {
@@ -35,8 +36,8 @@ function _updateDialogFormula(formula, html) {
 // For skill/tool rolls, update UI in response to changing ability used
 export async function _onAbilitySelect(abl, roll, html) {
   const label = CONFIG.DND5E.abilities[abl];
-  const mod = addPlusIfNotPresent(data.abilities[abl].mod);
   const data = roll.data;
+  const mod = addPlusIfNotPresent(data.abilities[abl].mod);
 
   // Update ability modifier value
   html[0].querySelector("label.toggle-label").textContent = label;

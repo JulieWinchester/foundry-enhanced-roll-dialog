@@ -9,7 +9,7 @@ export async function configureDamageRollDialog({title, defaultRollMode, default
   });
 
   // Render the Dialog inner HTML
-  const content = await renderTemplate("/modules/enhanced-roll-dialog/templates/roll-dialog-new.hbs", {
+  const content = await renderTemplate("/modules/enhanced-roll-dialog/templates/roll-dialog.hbs", {
     formula: `${this.formula} + @bonus`,
     defaultRollMode,
     rollModes: CONFIG.Dice.rollModes,

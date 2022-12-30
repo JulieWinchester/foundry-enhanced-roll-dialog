@@ -1,5 +1,4 @@
 import { _onPartToggle, _onAbilitySelect } from "../listeners.js";
-import { evalExpression } from "../utils.js";
 
 export async function configureDialog({title, defaultRollMode, defaultAction=this.constructor.ADV_MODE.NORMAL, chooseModifier=false,
   defaultAbility, template}={}, options={}) {
@@ -12,15 +11,6 @@ export async function configureDialog({title, defaultRollMode, defaultAction=thi
     toggleRow: "/modules/enhanced-roll-dialog/templates/roll-dialog-toggle-row.hbs"
   });
 
-  let changes = [];
-  if (this.data.action?.changes) {
-    changes = this.data.action?.changes.map(change => foundry.utils.mergeObject(change, 
-      { 
-        valueText: addPlusIfNotPresent(evalExpression(change.value, this.data))
-      }
-    ));
-  }
-
   // Render the Dialog inner HTML
   const content = await renderTemplate("/modules/enhanced-roll-dialog/templates/roll-dialog.hbs", {
     formula: `${this.formula} + @bonus`,
@@ -28,17 +18,8 @@ export async function configureDialog({title, defaultRollMode, defaultAction=thi
     rollModes: CONFIG.Dice.rollModes,
     chooseModifier,
     defaultAbility,
-    defaultAbilityLabel: CONFIG.DND5E.abilities[defaultAbility] || game.i18n.localize("DND5E.Ability"),
     abilities: CONFIG.DND5E.abilities,
-    mod: getInitialModifier(this.data, defaultAbility),
-    prof: addPlusIfNotPresent(this.data.prof),
-    proficient: this.data.action?.proficient,
-    changes: changes,
-    itemAttackBonus: parseInt(this.data.itemAttackBonus) ? addPlusIfNotPresent(this.data.itemAttackBonus) : null,
-    itemName: this.data.action?.itemName,
-    toolBonus: parseInt(this.data.toolBonus) ? addPlusIfNotPresent(this.data.toolBonus) : null,
-    ammo: parseInt(this.data.ammo) ? addPlusIfNotPresent(this.data.ammo) : null,
-    ammoItemName: this.data.action?.ammoItemName || game.i18n.localize("DND5E.ConsumableAmmunition")
+    rows: this.data.action?.partsInfo,
   });
 
   let defaultButton = "normal";

@@ -1,7 +1,10 @@
+import RollPartInfo from "./roll-part-info.js";
+
 // This logic is taken from DAE's applyDaeEffects() method
 export function evalExpression(value, rollData) {  
   console.log("DEBUG: enhanced-roll-dialog | evalExpression: Doing eval of ", value);
   
+  value = `${value}`;
   value = value.replace("@item.level", "@itemLevel");
 
   // Replace @ attributes
@@ -25,21 +28,20 @@ export function evalExpression(value, rollData) {
   return value;
 }
 
-export function isFallbackChangeNeeded(attr, parts, rollData, changes) {
-  return parts.includes(attr) && rollData[attr.substring(1)] && !changes.some(c => c.attr == attr);
+export function isFallbackChangeNeeded(attr, parts, rollData, rollPartInfoArray) {
+  return parts.includes(attr) && 
+    rollData[attr.substring(1)] && 
+    !rollPartInfoArray.some(i => i.attr == attr);
 }
 
 export function fallbackChange(attr, rollData) {
-  let change = {
-    effect: { label: game.i18n.localize("ERD.unknownModifier") },
-    originTag: "?",
-    value: rollData[attr.substring(1)],
+  return new RollPartInfo({
+    label: game.i18n.localize("ERD.unknownModifier"), 
+    tag: game.i18n.localize("ERD.unknown"), 
+    value: rollData[attr.substring(1)], 
+    valueText: addPlusIfNotPresent(evalExpression(rollData[attr.substring(1)], rollData)),
     attr: attr
-  };
-
-  change.valueText = evalExpression(change, rollData);
-
-  return change; 
+  });
 }
 
 export function parseDamageType(dmg) {
@@ -61,4 +63,11 @@ export function dmgTypeLabel(dmgType) {
 
 export function removeDmgTypeFromStr(value) {
   return (value || "").replace(/\[(.*?)\]/, ""); 
+}
+
+export function addPlusIfNotPresent(value) {
+  if (!value) return "0";
+  value = `${value}`;
+  if (value[0] && OperatorTerm.OPERATORS.includes(value[0])) return value;
+  return value = "+".concat(value);
 }

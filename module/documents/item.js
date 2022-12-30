@@ -1,7 +1,7 @@
 import D20RollEffectChanges from "../d20-roll-effect-changes.js";
 import DamageRollEffectChanges from "../damage-roll-effect-changes.js";
 import RollPartInfo from "../roll-part-info.js";
-import { isFallbackChangeNeeded, fallbackChange, evalExpression, dmgTypeLabel, removeDmgTypeFromStr } from "../utils.js";
+import { addPlusIfNotPresent, isFallbackChangeNeeded, fallbackChange, evalExpression, dmgTypeLabel, removeDmgTypeFromStr } from "../utils.js";
 
 export function rollAttackWrapper(wrapped, options={}) {
   if ( !this.hasAttack ) throw new Error("You may not place an Attack Roll with this Item.");
@@ -10,13 +10,40 @@ export function rollAttackWrapper(wrapped, options={}) {
   let {parts, rollData} = this.getAttackToHit();
 
   // Additional roll data terms
-  let addlRollData = {};
+  const addlRollData = {};
+  const partsInfo = [];
 
   // If item bonus present, reparse as @attr
   if (parseInt(rollData?.item?.attackBonus) && (parts || []).includes(rollData?.item?.attackBonus)) {
     parts.splice(parts.indexOf(rollData.item.attackBonus), 1, "@itemAttackBonus");
     addlRollData.itemAttackBonus = rollData.item.attackBonus;
+    partsInfo.push(new RollPartInfo({
+      label: this.name || "",
+      tag: game.i18n.localize("ERD.item"),
+      value: rollData.item.attackBonus,
+      valueText: addPlusIfNotPresent(evalExpression(rollData.item.attackBonus, rollData)),
+      attr: "@itemAttackBonus"
+    }));
   }
+
+  // Add @mod part info (probable to-do get @mod if necessary)
+  partsInfo.push(new RollPartInfo({
+    label: CONFIG.DND5E.abilities[(rollData.defaultAbility || this.abilityMod)],
+    tag: game.i18n.localize("DND5E.Ability"),
+    value: rollData.mod,
+    valueText: addPlusIfNotPresent(evalExpression(rollData.mod, rollData)),
+    attr: "@mod"
+  }));
+
+  // Add @prof part info
+  partsInfo.push(new RollPartInfo({
+    label: game.i18n.localize("DND5E.Proficiency"),
+    tag: game.i18n.localize("DND5E.Proficiency"),
+    value: rollData.prof,
+    valueText: addPlusIfNotPresent(evalExpression(rollData.prof, rollData)),
+    attr: "@prof",
+    disabled: !(!["weapon", "consumable"].includes(this.type) || this.system.proficient)
+  }));
 
   // If actor bonus present, reparse as @attr
   const actorAttackBonus = this.actor?.system?.bonuses?.[this.system.actionType]?.attack;
@@ -29,25 +56,37 @@ export function rollAttackWrapper(wrapped, options={}) {
   let ammoItemName = "";
   if ( (this.system.consume?.type === "ammo") && this.actor?.items ) {
     const ammoItem = this.actor.items.get(this.system.consume.target);
-    ammoItemName = ammoItem.name;
+    partsInfo.push(new RollPartInfo({
+      label: ammoItem.name,
+      tag: game.i18n.localize("DND5E.DND5E.ConsumableAmmunition"),
+      value: rollData.ammo,
+      valueText: addPlusIfNotPresent(evalExpression(rollData.ammo, rollData)),
+      attr: "@ammo",
+      preventToggle: true
+    }));
   }
 
-  let changes = D20RollEffectChanges.getChanges(this.actor, parts, "attack", this.system.actionType);
+  const changesInfo = D20RollEffectChanges
+    .getChanges(this.actor, "attack", this.system.actionType)
+    .map(change => foundry.utils.mergeObject(
+      change, { valueText: addPlusIfNotPresent(evalExpression(change.value, rollData)) }
+    ));
 
   // Add @actorAttackBonus fallback change if effects not recognized
-  if (isFallbackChangeNeeded("@actorAttackBonus", parts, addlRollData, changes)) {
-    changes.push(fallbackChange("@actorAttackBonus", addlRollData));
+  if (isFallbackChangeNeeded("@actorAttackBonus", parts, addlRollData, changesInfo)) {
+    changesInfo.push(
+      fallbackChange(
+        "@actorAttackBonus", 
+        foundry.utils.mergeObject(rollData, addlRollData)
+      )
+    );
   }
 
   addlRollData.action = {
     attributeOrder: ["@itemAttackBonus", "@mod", "@prof", "@actorAttackBonus", "@ammo"],
     mode: "attack",
     parts: parts,
-    changes: changes,
-    itemName: this.name || "",
-    itemAbilityMod: this.abilityMod,
-    proficient: !["weapon", "consumable"].includes(this.type) || this.system.proficient,
-    ammoItemName: ammoItemName
+    partsInfo: partsInfo.concat(changesInfo),
   };
 
   options = foundry.utils.mergeObject(options, { parts, data: addlRollData });
@@ -58,10 +97,52 @@ export function rollAttackWrapper(wrapped, options={}) {
 export function rollToolCheckWrapper(wrapped, options) {
   const abl = this.system.ability;
   const globalBonus = this.actor.system.bonuses?.abilities || {};
+  const rollData = this.getRollData();
   const parts = ["@mod", "@abilityCheckBonus"];
   if ( this.system.prof?.hasProficiency ) parts.push("@prof");
-  if ( this.system.bonus ) parts.push("@toolBonus");
+
+  const partsInfo = [];
+
+  // Add @mod part info (probable to-do get @mod if necessary)
+  partsInfo.push(new RollPartInfo({
+    label: CONFIG.DND5E.abilities[(rollData.defaultAbility || this.abilityMod)],
+    tag: game.i18n.localize("DND5E.Ability"),
+    value: rollData.mod,
+    valueText: addPlusIfNotPresent(evalExpression(rollData.mod, rollData)),
+    attr: "@mod"
+  }));
+
+  // Add @prof part info
+  partsInfo.push(new RollPartInfo({
+    label: game.i18n.localize("DND5E.Proficiency"),
+    tag: game.i18n.localize("DND5E.Proficiency"),
+    value: this.system.prof.term,
+    valueText: addPlusIfNotPresent(evalExpression(this.system.prof.term, rollData)),
+    attr: "@prof",
+    disabled: !this.system.prof?.hasProficiency
+  }));
+
+  // Add @toolBonus part info
+  if ( this.system.bonus ) {
+    const toolBonus = Roll.replaceFormulaData(this.system.bonus, rollData);
+    parts.push("@toolBonus");
+    partsInfo.push(new RollPartInfo({
+      label: game.i18n.localize("DND5E.ItemToolBonus"),
+      tag: game.i18n.localize("ERD.item"),
+      value: toolBonus,
+      valueText: addPlusIfNotPresent(evalExpression(toolBonus, rollData)),
+      attr: "@toolBonus"
+    }));
+  }
+  
   if ( globalBonus.check ) { parts.push("@checkBonus"); }
+  
+  const changesInfo = D20RollEffectChanges
+    .getChanges(this.actor, "check", abl, true)
+    .map(change => foundry.utils.mergeObject(
+      change, { valueText: addPlusIfNotPresent(evalExpression(change.value, rollData)) }
+    ));
+
   const baseAttributeOrder = ["@mod", "@abilityCheckBonus", "@prof", "@toolBonus", "@checkBonus"];
   
   let addlAttributeOrder = [];
@@ -79,11 +160,7 @@ export function rollToolCheckWrapper(wrapped, options) {
         attributeOrder: baseAttributeOrder.concat(addlAttributeOrder),
         mode: "check",
         parts: parts,
-        changes: D20RollEffectChanges.getChanges(this.actor, parts, "check", abl, true),
-        item: {
-          name: this.name || ""
-        },
-        proficient: this.system.prof?.hasProficiency
+        partsInfo: partsInfo.concat(changesInfo),
       }
     }
   });

@@ -1,14 +1,15 @@
+import RollPartInfo from "./roll-part-info.js";
+
 /* 
 This is the start of a function that will determine which effect changes apply to a particular roll
 It's likely that each general category of flag will need to be handled separately
 AKA, each category of flag needs to be checked to see if/how it affects the roll
 Maybe there is an easier way to do this, but I'm not aware of it so far!
 */
-// TODO: Remove parts! Not used or needed!
+
 /**
  * Gets relevant effect changes for a particular roll.
  * @param {Actor5e} actor                 Actor associated with the role.
- * @param {Array}   parts                 Array of roll formula parts.
  * @param {String}  rollType              One of "attack", "check", "save", or "skill".
  * @param {string}  rollSubType           Skill ID, ability ID, or attack type (e.g., mwak). Optional.
  * @param {boolean} isCheckForSkillOrTool If rollType = "check" but changes apply to skill or tool roll, use unique attr names. Optional
@@ -17,9 +18,8 @@ export default class D20RollEffectChanges {
   attackRollTypes = ["attack"];
   nonAttackRollTypes = ["check", "save", "skill"];
 
-  constructor(actor, parts, rollType, rollSubType, isCheckForSkillOrTool=false) {
+  constructor(actor, rollType, rollSubType, isCheckForSkillOrTool=false) {
     this.actor = actor;
-    this.parts = parts;
     this.rollType = rollType;
     this.rollSubType = rollSubType;
     this.isCheckForSkillOrTool = isCheckForSkillOrTool;
@@ -28,13 +28,12 @@ export default class D20RollEffectChanges {
   /**
    * Static method to get just the relevant effect changes for roll.
    * @param {Actor5e} actor        Actor associated with the role.
-   * @param {Array}   parts        Array of roll formula parts.
    * @param {String}  rollType     One of "attack", "check", "save", or "skill".
    * @param {string}  rollSubType  Skill ID, ability ID, or attack type (e.g., mwak). Optional.
    * @returns {Array<Object>}     Array of effect change objects with original effect included.
    */
-  static getChanges(actor, parts, rollType, rollSubType, isCheckForSkillOrTool=false) {
-    return new this(actor, parts, rollType, rollSubType, isCheckForSkillOrTool).changes;
+  static getChanges(actor, rollType, rollSubType, isCheckForSkillOrTool=false) {
+    return new this(actor, rollType, rollSubType, isCheckForSkillOrTool).changes;
   }
 
   /**
@@ -44,7 +43,7 @@ export default class D20RollEffectChanges {
   get changes() {
     if (!this.actor) return [];
     
-    let c = this.actor.effects.map(effect => {
+    const c = this.actor.effects.map(effect => {
       const changes = effect.changes
         .filter(change => this.changeKeys.includes(change.key))
         .map(change => foundry.utils.mergeObject(change, 
@@ -58,14 +57,26 @@ export default class D20RollEffectChanges {
       return ( !(effect.isSuppressed) && changes.length ) ? changes : null;
     }).filter(changeArray => changeArray).flat();
 
+    console.log(c)
+
+    let changePartsInfo = c.map(change => new RollPartInfo({
+      label: change.effect.label,
+      tag: this.originTag(change.effect),
+      value: change.value,
+      attr: this.attributeForChange(change.key),
+      disabled: change.effect.disabled
+    }));
+
     // Skill rolls are also ability checks, have to watch out for that
     if (this.rollType == "skill") {
-      c = c.concat(this.constructor.getChanges(
-        this.actor, this.parts, "check", CONFIG.DND5E.skills[this.rollSubType].ability, true
+      changePartsInfo = changePartsInfo.concat(this.constructor.getChanges(
+        this.actor, "check", CONFIG.DND5E.skills[this.rollSubType].ability, true
       ));
     }
 
-    return c;
+    console.log(changePartsInfo);
+
+    return changePartsInfo;
   }
 
   /**

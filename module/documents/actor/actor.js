@@ -1,3 +1,6 @@
+import RollPartInfo from "../../roll-part-info.js";
+import { addPlusIfNotPresent, evalExpression } from "../../utils.js";
+
 /* 
 Wrapper functions for Actor roll funcs to enhance rollData as needed
 
@@ -11,11 +14,39 @@ import D20RollEffectChanges from "../../d20-roll-effect-changes.js";
 export function rollSkillWrapper(wrapped, skillId, options) {
   const skl = this.system.skills[skillId];
   const globalBonuses = this.system.bonuses?.abilities ?? {};
+  const rollData = this.getRollData();
+
   const parts = ["@mod", "@abilityCheckBonus"];
   if ( skl.prof.hasProficiency ) parts.push("@prof");
   if ( globalBonuses.check ) parts.push("@checkBonus");
   if ( skl.bonuses?.check ) parts.push(`@${skillId}CheckBonus`);
   if ( globalBonuses.skill ) parts.push("@skillBonus");
+  
+  // Add @mod and @prof part info
+  const partsInfo = [
+    new RollPartInfo({
+      label: CONFIG.DND5E.abilities[skl.ability],
+      tag: game.i18n.localize("DND5E.Ability"),
+      value: skl.mod,
+      valueText: addPlusIfNotPresent(evalExpression(skl.mod, rollData)),
+      attr: "@mod"
+    }),
+    new RollPartInfo({
+      label: game.i18n.localize("DND5E.Proficiency"),
+      tag: game.i18n.localize("DND5E.Proficiency"),
+      value: rollData.prof.term,
+      valueText: addPlusIfNotPresent(evalExpression(rollData.prof.term, rollData)),
+      attr: "@prof",
+      disabled: !skl.prof.hasProficiency
+    })
+  ];
+
+  const changesInfo = D20RollEffectChanges
+    .getChanges(this, "skill", skillId)
+    .map(change => foundry.utils.mergeObject(
+      change, { valueText: addPlusIfNotPresent(evalExpression(change.value, rollData)) }
+    ));
+  
   const baseAttributeOrder = ["@mod", "@abilityCheckBonus", "@prof", "@checkBonus", `@${skillId}CheckBonus`, "@skillBonus"];
   
   let addlAttributeOrder = [];
@@ -33,9 +64,7 @@ export function rollSkillWrapper(wrapped, skillId, options) {
         attributeOrder: baseAttributeOrder.concat(addlAttributeOrder),
         mode: "skill",
         parts: parts,
-        changes: D20RollEffectChanges.getChanges(this, parts, "skill", skillId),
-        skill: skillId,
-        proficient: skl.proficient
+        partsInfo: partsInfo.concat(changesInfo),
       }
     }
   });
@@ -46,11 +75,39 @@ export function rollSkillWrapper(wrapped, skillId, options) {
 export function rollAbilityTestWrapper(wrapped, abilityId, options) {
   const abl = this.system.abilities[abilityId];
   const globalBonuses = this.system.bonuses?.abilities ?? {};
+  const rollData = this.getRollData();
+
   const parts = [];
   parts.push("@mod");
   if ( abl?.checkProf.hasProficiency ) parts.push("@prof");
   if ( abl?.bonuses?.check ) parts.push(`@${abilityId}CheckBonus`);
   if ( globalBonuses.check ) parts.push("@checkBonus");
+
+  // Add @mod and @prof part info
+  const partsInfo = [
+    new RollPartInfo({
+      label: CONFIG.DND5E.abilities[abilityId],
+      tag: game.i18n.localize("DND5E.Ability"),
+      value: abl?.mod,
+      valueText: addPlusIfNotPresent(evalExpression(abl?.mod, rollData)),
+      attr: "@mod"
+    }),
+    new RollPartInfo({
+      label: game.i18n.localize("DND5E.Proficiency"),
+      tag: game.i18n.localize("DND5E.Proficiency"),
+      value: rollData.prof.term,
+      valueText: addPlusIfNotPresent(evalExpression(rollData.prof.term, rollData)),
+      attr: "@prof",
+      disabled: !abl?.checkProf.hasProficiency
+    })
+  ];
+
+  const changesInfo = D20RollEffectChanges
+    .getChanges(this, "check", abilityId)
+    .map(change => foundry.utils.mergeObject(
+      change, { valueText: addPlusIfNotPresent(evalExpression(change.value, rollData)) }
+    ));
+
   const baseAttributeOrder = ["@mod", "@prof", `@${abilityId}CheckBonus`, "@checkBonus"];
   
   let addlAttributeOrder = [];
@@ -68,9 +125,7 @@ export function rollAbilityTestWrapper(wrapped, abilityId, options) {
         attributeOrder: baseAttributeOrder.concat(addlAttributeOrder),
         mode: "check",
         parts: parts,
-        changes: D20RollEffectChanges.getChanges(this, parts, "check", abilityId),
-        ability: abilityId,
-        proficient: abl?.checkProf.hasProficiency
+        partsInfo: partsInfo.concat(changesInfo),
       }
     }
   });
@@ -82,11 +137,39 @@ export function rollAbilitySaveWrapper(wrapped, abilityId, options) {
   console.log(this.system.actionType);
   const abl = this.system.abilities[abilityId];
   const globalBonuses = this.system.bonuses?.abilities ?? {};
+  const rollData = this.getRollData();
+
   const parts = [];
   parts.push("@mod");
   if ( abl?.saveProf.hasProficiency ) parts.push("@prof");
   if ( abl?.bonuses?.save ) parts.push(`@${abilityId}SaveBonus`);
   if ( globalBonuses.save ) parts.push("@saveBonus");
+
+  // Add @mod and @prof part info
+  const partsInfo = [
+    new RollPartInfo({
+      label: CONFIG.DND5E.abilities[abilityId],
+      tag: game.i18n.localize("DND5E.Ability"),
+      value: abl?.mod,
+      valueText: addPlusIfNotPresent(evalExpression(abl?.mod, rollData)),
+      attr: "@mod"
+    }),
+    new RollPartInfo({
+      label: game.i18n.localize("DND5E.Proficiency"),
+      tag: game.i18n.localize("DND5E.Proficiency"),
+      value: rollData.prof.term,
+      valueText: addPlusIfNotPresent(evalExpression(rollData.prof.term, rollData)),
+      attr: "@prof",
+      disabled: !abl?.saveProf.hasProficiency
+    })
+  ];
+
+  const changesInfo = D20RollEffectChanges
+    .getChanges(this, "save", abilityId)
+    .map(change => foundry.utils.mergeObject(
+      change, { valueText: addPlusIfNotPresent(evalExpression(change.value, rollData)) }
+    ));
+
   const baseAttributeOrder = ["@mod", "@prof", `@${abilityId}SaveBonus`, "@saveBonus"];
 
   let addlAttributeOrder = [];
@@ -104,9 +187,7 @@ export function rollAbilitySaveWrapper(wrapped, abilityId, options) {
         attributeOrder: baseAttributeOrder.concat(addlAttributeOrder),
         mode: "save",
         parts: parts,
-        changes: D20RollEffectChanges.getChanges(this, parts, "save", abilityId),
-        ability: abilityId,
-        proficient: abl?.saveProf.hasProficiency
+        partsInfo: partsInfo.concat(changesInfo),
       }
     }
   });
