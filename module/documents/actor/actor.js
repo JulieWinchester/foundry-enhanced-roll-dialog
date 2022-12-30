@@ -6,7 +6,7 @@ Item5E.rollAttack gets roll parts from another func that is easily wrapped, not 
 Alternatively, could override entire Actor roll funcs, but probably best not to do that. 
 */
 
-import RollEffectChanges from "./roll-effect-changes.js";
+import RollEffectChanges from "../../roll-effect-changes.js";
 
 export function rollSkillWrapper(wrapped, skillId, options) {
   const skl = this.system.skills[skillId];

@@ -1,8 +1,7 @@
 // This logic is taken from DAE's applyDaeEffects() method
-export function evalExpression(change, rollData) {  
-  console.log("DEBUG: enhanced-roll-dialog | evalChangeValue: Doing eval of ", change, change.value);
+export function evalExpression(value, rollData) {  
+  console.log("DEBUG: enhanced-roll-dialog | evalExpression: Doing eval of ", value);
   
-  let value = change.value;
   value = value.replace("@item.level", "@itemLevel");
 
   // Replace @ attributes
@@ -14,11 +13,11 @@ export function evalExpression(change, rollData) {
   catch (err) { // safeEval failed try a roll
     try {
         console.log("enhanced-roll-dialog | encountered dice expression, will try to parse");
-        console.log(`Change is ${change.key}: ${change.value}`);
+        console.log(`Value is ${value}`);
         value = `${new Roll(value).evaluate({ async: false }).formula}`;
     }
     catch (err) {
-        console.log("enhanced-roll-dialog | change value calculation failed for", this, change);
+        console.log("enhanced-roll-dialog | value calculation failed for", this, value);
         console.log(err);
     }
   }

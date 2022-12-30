@@ -1,5 +1,5 @@
-import ModifyRoll from "./modify-roll.js";
-import { evalExpression } from "./utils.js";
+import { _onPartToggle, _onAbilitySelect } from "../listeners.js";
+import { evalExpression } from "../utils.js";
 
 export async function configureDialog({title, defaultRollMode, defaultAction=this.constructor.ADV_MODE.NORMAL, chooseModifier=false,
   defaultAbility, template}={}, options={}) {
@@ -16,7 +16,7 @@ export async function configureDialog({title, defaultRollMode, defaultAction=thi
   if (this.data.action?.changes) {
     changes = this.data.action?.changes.map(change => foundry.utils.mergeObject(change, 
       { 
-        valueText: addPlusIfNotPresent(evalExpression(change, this.data))
+        valueText: addPlusIfNotPresent(evalExpression(change.value, this.data))
       }
     ));
   }
@@ -72,11 +72,11 @@ export async function configureDialog({title, defaultRollMode, defaultAction=thi
         const changeToggles = html[0].querySelectorAll("input.toggle");
         changeToggles.forEach(changeToggle => {
           changeToggle.addEventListener("change", (event) => {
-            this._onPartToggle(event, html);
+            _onPartToggle(event, this, html);
           })
         });
         html[0].querySelector("select[name='ability']")?.addEventListener("change", (event) => {
-          _onAbilitySelect(event.target.value, this.data, this, html);
+          _onAbilitySelect(event.target.value, this, html);
         });
       }
     }, options).render(true, { height: "100%" });
@@ -96,80 +96,4 @@ function addPlusIfNotPresent(value) {
   value = `${value}`;
   if (value[0] && OperatorTerm.OPERATORS.includes(value[0])) return value;
   return value = "+".concat(value);
-}
-
-export function _onPartToggle(event, html) {
-  event.preventDefault();
-
-  // Target parent form-group has correct styling
-  if (event.target.checked) {
-    event.target.closest("div.form-group").classList.remove("toggle-disabled");
-  } else {
-    event.target.closest("div.form-group").classList.add("toggle-disabled");
-  }
-
-  new ModifyRoll(this, event.target).updateRoll();
-  console.log(this.data);
-
-  _updateDialogFormula(this.formula, html);
-}
-
-function _updateDialogFormula(formula, html) {
-  html[0].querySelector("form input[name='formula']").value = `${formula} + @bonus`;
-}
-
-async function _onAbilitySelect(abl, data, roll, html) {
-  const label = CONFIG.DND5E.abilities[abl];
-  const mod = addPlusIfNotPresent(data.abilities[abl].mod);
-
-  // Update ability modifier value
-  html[0].querySelector("label.toggle-label").textContent = label;
-  html[0].querySelector("label.toggle-value").textContent = mod;
-
-  // If ability check bonus, update
-  const fg = html[0]
-    .querySelector("input[data-attribute='@abilityCheckBonus']")
-    ?.closest("div.form-group");
-  if (data.abilities[abl].bonuses?.check) {
-    const genericLabel = game.i18n.localize("DND5E.ActionAbil");
-    const value = addPlusIfNotPresent(data.abilities[abl].bonuses.check);
-
-    // Bonus exists, must update or add
-    if (fg) {
-      // update
-      fg.querySelector("label").textContent = genericLabel;
-      fg.querySelector("label.toggle-value").textContent = value;
-      if (fg.querySelector("input").checked == false) {
-        fg.querySelector("input").checked = true;
-        new ModifyRoll(roll, fg.querySelector("input")).updateRoll();
-        _updateDialogFormula(roll.formula, html);
-      }
-      if (fg.style.display == "none") fg.style.display = "flex";
-    } else {
-      // add
-      const newElement = await renderTemplate("/modules/enhanced-roll-dialog/templates/roll-dialog-toggle-row.hbs", {
-        label: genericLabel,
-        tag: game.i18n.localize("ERD.effect"),
-        value: value,
-        attr: "@abilityCheckBonus",
-        inputID: "toggle-checkbox-ability-check-bonus",
-        formGroupClass: "ability-check-bonus",
-      });
-      $("form.roll-toggle-dialog div.toggle-rows").append(newElement);
-
-      // apply usual event listeners
-      html[0].querySelector("div.form-group.dnd5e.ability-check-bonus")
-        .addEventListener("change", (event) => {
-          roll._onPartToggle(event, html);
-      });
-    }
-  } else if (fg) {
-    // Bonus does not exist, must remove if present
-    fg.style.display = "none";
-    if (fg.querySelector("input").checked == true) {
-      fg.querySelector("input").checked = false;
-      new ModifyRoll(roll, fg.querySelector("input")).updateRoll();
-      _updateDialogFormula(roll.formula, html);
-    }
-  }
 }
