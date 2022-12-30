@@ -1,7 +1,5 @@
 ![](https://img.shields.io/badge/Foundry-10.291-informational)
-<!--- Downloads @ Latest Badge -->
-<!--- replace <user>/<repo> with your username/repository -->
-![Latest Release Download Count](https://img.shields.io/github/downloads/JulieWinchester/foundry-enhanced-roll-dialog/latest/module.zip)
+![Latest Release Download Count](https://img.shields.io/badge/dynamic/json?label=Downloads@latest&query=assets%5B1%5D.download_count&url=https%3A%2F%2Fapi.github.com%2Frepos%2FJulieWinchester%2Ffoundry-enhanced-roll-dialog%2Freleases%2Flatest)
 
 <!--- Forge Bazaar Install % Badge -->
 <!--- replace <your-module-name> with the `name` in your manifest -->
