@@ -46,13 +46,7 @@ export default class D20RollEffectChanges {
     const c = this.actor.effects.map(effect => {
       const changes = effect.changes
         .filter(change => this.changeKeys.includes(change.key))
-        .map(change => foundry.utils.mergeObject(change, 
-          { 
-            effect: effect, 
-            attr: this.attributeForChange(change.key),
-            originTag: this.originTag(effect)
-          }
-        ));
+        .map(change => foundry.utils.mergeObject(change, { effect: effect }));
 
       return ( !(effect.isSuppressed) && changes.length ) ? changes : null;
     }).filter(changeArray => changeArray).flat();
