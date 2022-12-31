@@ -39,6 +39,8 @@ This module does not currently play well with any other module that modifies or 
 
 **Do not** use this module while enabling Midi-Qol's **Enhanced Damage Roll Dialog**. This module is compatible with Midi, but you must turn off the Midi Enhanced Damage Roll Dialog in order to use ERD.
 
+I have not yet checked WIRE's custom attack roll dialog and whether it causes conflicts with ERD.
+
 ## Details
 
 ERD is in a very early state of development, and numerous problems may be encountered. Importantly, except for a few exceptions, this module mostly does not touch the core roll data handled by Foundry unless you interact with the dialog to toggle a bonus on or off. Because of this, even if the module "misses" some of the modifiers affecting a roll, the roll should still successfully complete with all modifiers included in most cases, especially (again) if you don't toggle any roll parts.
