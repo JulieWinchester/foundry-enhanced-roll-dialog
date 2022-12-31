@@ -242,10 +242,15 @@ export function rollDamageWrapper(wrapped, {critical=false, event=null, spellLev
       change, { valueText: removeDmgTypeFromStr(evalExpression(change.value, rollData)) }
     ));
 
-  // TODO add fallback after refactoring non-damage to work with RollPartInfo
-  // if (isFallbackChangeNeeded("@actorDamageBonus", parts, rollData, partsInfo)) {
-  //   changes.push(fallbackChange("@actorAttackBonus", addlRollData));
-  // }
+  // Add @actorDamageBonus fallback change if effects not recognized
+  if (isFallbackChangeNeeded("@actorDamageBonus", parts, addlRollData, changesInfo)) {
+    changesInfo.push(
+      fallbackChange(
+        "@actorDamageBonus", 
+        foundry.utils.mergeObject(rollData, addlRollData)
+      )
+    );
+  }
 
   addlRollData.action = {
     attributeOrder: initialAttributeOrder.concat(["@actorDamageBonus", "@ammo"]),
