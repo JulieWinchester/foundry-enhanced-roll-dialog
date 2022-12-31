@@ -31,17 +31,30 @@ export function evalExpression(value, rollData) {
 export function isFallbackChangeNeeded(attr, parts, rollData, rollPartInfoArray) {
   return parts.includes(attr) && 
     rollData[attr.substring(1)] && 
-    !rollPartInfoArray.some(i => i.attr == attr);
+    addlBonusValue(attr, rollData, rollPartInfoArray);
 }
 
-export function fallbackChange(attr, rollData) {
+export function fallbackChange(attr, rollData, rollPartInfoArray, defaultTag=null) {
+  const newValue = addlBonusValue(attr, rollData, rollPartInfoArray);
   return new RollPartInfo({
     label: game.i18n.localize("ERD.unknownModifier"), 
-    tag: game.i18n.localize("ERD.unknown"), 
-    value: rollData[attr.substring(1)], 
-    valueText: addPlusIfNotPresent(evalExpression(rollData[attr.substring(1)], rollData)),
+    tag: defaultTag || game.i18n.localize("ERD.unknown"), 
+    value: newValue, 
+    valueText: addPlusIfNotPresent(evalExpression(newValue, rollData)),
     attr: attr
   });
+}
+
+function addlBonusValue(attr, rollData, rollPartInfoArray) {
+  if (rollData[attr.substring(1)]) {
+    let value = rollData[attr.substring(1)];
+    rollPartInfoArray.forEach(partInfo => {
+      if (partInfo.attr == attr) value = value.replace(partInfo.value, "");
+    })
+    return value;
+  } else {
+    return null;
+  }
 }
 
 export function parseDamageType(dmg) {

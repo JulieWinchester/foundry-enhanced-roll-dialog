@@ -74,10 +74,11 @@ export function rollAttackWrapper(wrapped, options={}) {
 
   // Add @actorAttackBonus fallback change if effects not recognized
   if (isFallbackChangeNeeded("@actorAttackBonus", parts, addlRollData, changesInfo)) {
-    changesInfo.push(
+    changesInfo.unshift(
       fallbackChange(
         "@actorAttackBonus", 
-        foundry.utils.mergeObject(rollData, addlRollData)
+        foundry.utils.mergeObject(rollData, addlRollData),
+        changesInfo
       )
     );
   }
@@ -244,10 +245,12 @@ export function rollDamageWrapper(wrapped, {critical=false, event=null, spellLev
 
   // Add @actorDamageBonus fallback change if effects not recognized
   if (isFallbackChangeNeeded("@actorDamageBonus", parts, addlRollData, changesInfo)) {
-    changesInfo.push(
+    changesInfo.unshift(
       fallbackChange(
         "@actorDamageBonus", 
-        foundry.utils.mergeObject(rollData, addlRollData)
+        foundry.utils.mergeObject(rollData, addlRollData),
+        changesInfo,
+        dmgTypeLabel(dmg.parts[0]?.[1])
       )
     );
   }
