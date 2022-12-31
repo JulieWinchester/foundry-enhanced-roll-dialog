@@ -33,6 +33,12 @@ Proficiency is displayed similarly to Active Effects, where appropriate. A profi
 
 Putting all this together, Enhanced Roll Dialog supports various low to medium automation approaches to 5E that doesn't require players remembering to disable or reenable Active Effects to add bonuses before initiating a roll. But it can also be used in just about any game where it would be helpful for players to see what parts comprise roll formulas. 
 
+## Compatibility
+
+This module does not currently play well with any other module that modifies or enhances roll dialogs. 
+
+**Do not** use this module while enabling Midi-Qol's **Enhanced Damage Roll Dialog**. This module is compatible with Midi, but you must turn off the Midi Enhanced Damage Roll Dialog in order to use ERD.
+
 ## Details
 
 ERD is in a very early state of development, and numerous problems may be encountered. Importantly, except for a few exceptions, this module mostly does not touch the core roll data handled by Foundry unless you interact with the dialog to toggle a bonus on or off. Because of this, even if the module "misses" some of the modifiers affecting a roll, the roll should still successfully complete with all modifiers included in most cases, especially (again) if you don't toggle any roll parts.
