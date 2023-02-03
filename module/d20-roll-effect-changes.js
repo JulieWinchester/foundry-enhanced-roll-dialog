@@ -169,7 +169,7 @@ export default class D20RollEffectChanges {
       if (originEntity) {
         switch (originEntity.documentName) {
           case "Item":
-            tag = (originEntity.type == "spell") ? game.i18n.localize("DND5E.ItemTypeSpell") : game.i18n.localize("ERD.item")
+            tag = (originEntity.type == "spell") ? game.i18n.localize("ITEM.TypeSpell") : game.i18n.localize("ERD.item")
             break;
           case "Token":
             tag = (originEntity.actorId == this.actor.id) ? game.i18n.localize("DND5E.TargetSelf") : game.i18n.localize("DND5E.Target");

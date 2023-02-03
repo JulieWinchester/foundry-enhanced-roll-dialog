@@ -58,7 +58,7 @@ export function rollAttackWrapper(wrapped, options={}) {
     const ammoItem = this.actor.items.get(this.system.consume.target);
     partsInfo.push(new RollPartInfo({
       label: ammoItem.name,
-      tag: game.i18n.localize("DND5E.DND5E.ConsumableAmmunition"),
+      tag: game.i18n.localize("DND5E.ConsumableAmmo"),
       value: rollData.ammo,
       valueText: addPlusIfNotPresent(evalExpression(rollData.ammo, rollData)),
       attr: "@ammo",
