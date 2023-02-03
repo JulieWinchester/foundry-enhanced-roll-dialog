@@ -90,7 +90,7 @@ export function rollAttackWrapper(wrapped, options={}) {
     partsInfo: partsInfo.concat(changesInfo),
   };
 
-  options = foundry.utils.mergeObject(options, { parts, data: addlRollData });
+  options = foundry.utils.mergeObject(options, { data: addlRollData });
 
   return wrapped(options);
 } 
@@ -170,7 +170,6 @@ export function rollToolCheckWrapper(wrapped, options) {
 }
 
 export function rollDamageWrapper(wrapped, {critical=false, event=null, spellLevel=null, versatile=false, options={}}={}) {
-  console.log(this.system);
   const dmg = this.system.damage;
   let parts = dmg.parts.map(d => d[0]);
 
@@ -213,7 +212,6 @@ export function rollDamageWrapper(wrapped, {critical=false, event=null, spellLev
   parts = partsInfo.map(p => p.attr);
   const initialAttributeOrder = parts;
 
-  console.log(this.actor?.system);
   // Add damage bonus formula
   const actorBonus = foundry.utils.getProperty(this.actor.system, `bonuses.${this.system.actionType}`) || {};
   if ( actorBonus.damage && (parseInt(actorBonus.damage) !== 0) ) {
@@ -262,9 +260,7 @@ export function rollDamageWrapper(wrapped, {critical=false, event=null, spellLev
     partsInfo: partsInfo.concat(changesInfo),
   }
 
-  foundry.utils.mergeObject(options, { parts, data: addlRollData });
-
-  console.log(parts);
+  foundry.utils.mergeObject(options, { data: addlRollData });
 
   return wrapped({critical, event, spellLevel, versatile, options});
 }
