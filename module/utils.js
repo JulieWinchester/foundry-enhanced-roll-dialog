@@ -75,7 +75,7 @@ export function dmgTypeLabel(dmgType) {
 }
 
 export function removeDmgTypeFromStr(value) {
-  return (value || "").replace(/\[(.*?)\]/, ""); 
+  return (`${value}` || "").replace(/\[(.*?)\]/, ""); 
 }
 
 export function addPlusIfNotPresent(value) {
